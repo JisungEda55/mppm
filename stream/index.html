@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VrPPG | SpO₂</title>
+    <style>
+        @font-face {
+            font-family: 'LineSeed';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Th.woff2') format('woff2');
+            font-weight: 100;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'LineSeed';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Rg.woff2') format('woff2');
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'LineSeed';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; overflow: hidden;
+            background: transparent !important;
+            font-family: 'LineSeed', sans-serif;
+        }
+        #container {
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; background: transparent;
+            color: white; text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        #video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; pointer-events: none; /* 숨김 & 클릭 방지 */
+        }
+        #bpm {
+            font-size: 96px; font-weight: 700; letter-spacing: -2px;
+            margin: 0; line-height: 1;
+        }
+        #spo2 {
+            font-size: 28px; margin-top: 8px; opacity: 0.8;
+        }
+        #status {
+            font-size: 18px; margin-top: 20px; color: #ddd;
+            text-align: center; max-width: 90%;
+        }
+        .pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+    </style>
+</head>
+<body>
+    <video id="video" autoplay playsinline muted></video>
+    <div id="container">
+        <div id="bpm">--</div>
+        <div id="spo2">SpO₂ -- %</div>
+        <div id="status">카메라 연결 중... 얼굴을 정면으로 향해주세요</div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const bpmEl = document.getElementById('bpm');
+        const spo2El = document.getElementById('spo2');
+        const statusEl = document.getElementById('status');
+
+        let signalG = [], signalR = [], signalB = [];
+        let frameCount = 0;
+        const FPS = 30;
+        let stream = null;
+
+        // 페이지 로드 즉시 카메라 시작
+        window.addEventListener('load', startCamera);
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+                });
+                video.srcObject = stream;
+                video.play();
+                statusEl.textContent = '측정 중...';
+                requestAnimationFrame(processFrame);
+            } catch (e) {
+                statusEl.textContent = '카메라 연결 실패\nOBS 설정에서 카메라 권한을 확인해주세요';
+                bpmEl.textContent = '--';
+                spo2El.textContent = 'SpO₂ -- %';
+            }
+        }
+
+        function processFrame() {
+            if (!stream) return;
+
+            frameCount++;
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth || 640;
+            tempCanvas.height = video.videoHeight || 480;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            const roiSize = 140;
+            const x = (tempCanvas.width - roiSize) / 2;
+            const y = (tempCanvas.height - roiSize) / 2;
+            const data = ctx.getImageData(x, y, roiSize, roiSize).data;
+
+            let r=0, g=0, b=0;
+            for (let i = 0; i < data.length; i += 4) {
+                r += data[i]; g += data[i+1]; b += data[i+2];
+            }
+            signalR.push(r / (roiSize*roiSize));
+            signalG.push(g / (roiSize*roiSize));
+            signalB.push(b / (roiSize*roiSize));
+
+            if (signalG.length > 600) {
+                signalR.shift(); signalG.shift(); signalB.shift();
+            }
+
+            if (frameCount % (FPS * 5) === 0 && signalG.length > 300) {
+                calculate();
+            }
+
+            requestAnimationFrame(processFrame);
+        }
+
+        function calculate() {
+            const channels = [signalR, signalG, signalB];
+            let bestBPM = 0;
+            channels.forEach(sig => {
+                const bpmVal = getBPM(sig);
+                if (bpmVal > bestBPM) bestBPM = bpmVal;
+            });
+
+            // SpO₂ (ratio-of-ratios)
+            const meanR = signalR.reduce((a,b)=>a+b,0)/signalR.length;
+            const meanG = signalG.reduce((a,b)=>a+b,0)/signalG.length;
+            const acR = Math.sqrt(signalR.reduce((a,b)=>a+(b-meanR)**2,0)/signalR.length);
+            const acG = Math.sqrt(signalG.reduce((a,b)=>a+(b-meanG)**2,0)/signalG.length);
+            const ratio = (acR/meanR) / (acG/meanG);
+            const spo2 = Math.max(80, Math.min(100, Math.round(110 - 25 * ratio)));
+
+            // BPM 색상 변화
+            let color = '#00ff88'; // 기본 청록
+            let pulseClass = '';
+            if (bestBPM >= 110) {
+                color = '#ff4d4d';
+                pulseClass = 'pulse';
+            } else if (bestBPM >= 90) {
+                color = '#ffdd00';
+            }
+
+            bpmEl.textContent = bestBPM || '--';
+            bpmEl.style.color = color;
+            bpmEl.className = pulseClass;
+            spo2El.textContent = `SpO₂ ${spo2 || '--'} %`;
+            statusEl.textContent = '실시간 측정 중';
+        }
+
+        function getBPM(sig) {
+            const mean = sig.reduce((a,b)=>a+b,0)/sig.length;
+            const detrended = sig.map(v => v - mean);
+            let maxCorr = -Infinity, bestLag = 30;
+            for (let lag = 15; lag < 60; lag++) {
+                let corr = 0;
+                for (let i = 0; i < detrended.length - lag; i++) {
+                    corr += detrended[i] * detrended[i + lag];
+                }
+                if (corr > maxCorr) {
+                    maxCorr = corr;
+                    bestLag = lag;
+                }
+            }
+            const bpm = Math.round(60 / (bestLag / FPS));
+            return (bpm >= 40 && bpm <= 180) ? bpm : 0;
+        }
+    </script>
+</body>
+</html>
