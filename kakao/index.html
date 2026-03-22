@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오톡 커스텀 템플릿 딥링크 생성기 📤</title>
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Pretendard', system-ui, sans-serif; }
+        .card { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50 py-12">
+    <div class="max-w-xl mx-auto px-6">
+        <div class="card bg-white rounded-3xl p-10">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-yellow-400 rounded-2xl flex items-center justify-center text-3xl">🗨️</div>
+                <h1 class="text-3xl font-bold text-gray-900">카카오톡 공유 도구</h1>
+            </div>
+
+            <!-- 입력 폼 -->
+            <div class="space-y-8">
+                <!-- 1. JavaScript 키 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">🔑 JavaScript 앱 키</label>
+                    <input id="appkey" type="text" placeholder="fb0b7466bb7366d3c2bbe591c4a65a9f1" 
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-sm">
+                    <p class="text-xs text-gray-500 mt-1">카카오 개발자 콘솔에서 복사하세요</p>
+                </div>
+
+                <!-- 2. 템플릿 ID -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📋 템플릿 ID</label>
+                    <input id="templateId" type="number" placeholder="3139" 
+                           class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-sm">
+                </div>
+
+                <!-- 3. templateArgs JSON (유연하게 모든 변수 지원) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📝 templateArgs (JSON)</label>
+                    <textarea id="templateArgs" rows="8" 
+                              class="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:border-yellow-400 text-sm font-mono">{
+  "title": "제목을 입력하세요",
+  "description": "설명을 입력하세요",
+  "image_url": "https://example.com/image.jpg",
+  "web_url": "https://your-site.com/page",
+  "mobile_web_url": "https://your-site.com/page"
+}</textarea>
+                    <p class="text-xs text-gray-500 mt-1">템플릿에서 만든 변수명과 정확히 일치시켜 주세요 (image_url, title 등)</p>
+                </div>
+            </div>
+
+            <!-- 버튼 영역 -->
+            <div class="mt-10 flex flex-col gap-4">
+                <button onclick="initializeAndShare()" 
+                        class="w-full bg-yellow-400 hover:bg-yellow-500 transition-all py-5 rounded-2xl text-xl font-bold text-white flex items-center justify-center gap-3 shadow-lg">
+                    🎉 딥링크 생성 & 카카오톡 바로 공유하기
+                </button>
+                
+                <button onclick="generateDeepLinkURL()" 
+                        class="w-full bg-white border-2 border-gray-300 hover:border-gray-400 transition-all py-5 rounded-2xl text-lg font-medium flex items-center justify-center gap-3">
+                    🔗 딥링크 URL만 복사하기 (수동 사용)
+                </button>
+            </div>
+
+            <!-- 결과 영역 -->
+            <div id="result" class="mt-8 hidden bg-gray-100 rounded-2xl p-6 text-sm font-mono break-all"></div>
+        </div>
+
+        <p class="text-center text-xs text-gray-400 mt-8">✅ 공식 Kakao SDK + 직접 딥링크 생성기 포함 | 2026년 최신 문서 기준</p>
+    </div>
+
+    <script>
+        // Tailwind 초기화
+        function initTailwind() {
+            // 이미 CDN으로 로드됨
+        }
+
+        // Kakao SDK 초기화
+        function initKakao() {
+            const appkey = document.getElementById('appkey').value.trim();
+            if (!appkey) {
+                alert('🔑 JavaScript 앱 키를 먼저 입력해주세요!');
+                return false;
+            }
+            if (Kakao.isInitialized()) {
+                console.log('✅ 이미 초기화됨');
+                return true;
+            }
+            Kakao.init(appkey);
+            console.log('✅ Kakao SDK 초기화 완료');
+            return true;
+        }
+
+        // 실제 공유 실행
+        async function initializeAndShare() {
+            if (!initKakao()) return;
+
+            const templateId = parseInt(document.getElementById('templateId').value);
+            if (!templateId) {
+                alert('📋 템플릿 ID를 입력해주세요!');
+                return;
+            }
+
+            let args;
+            try {
+                args = JSON.parse(document.getElementById('templateArgs').value);
+            } catch (e) {
+                alert('📝 templateArgs JSON 형식이 잘못되었습니다!');
+                return;
+            }
+
+            try {
+                await Kakao.Share.sendCustom({
+                    templateId: templateId,
+                    templateArgs: args
+                });
+                document.getElementById('result').innerHTML = `
+                    <span class="text-green-600">✅ 카카오톡 공유 요청 성공!<br>
+                    딥링크(kakaolink://send?)가 자동 생성되어 앱으로 이동했습니다.</span>
+                `;
+                document.getElementById('result').classList.remove('hidden');
+            } catch (error) {
+                console.error(error);
+                alert('❌ 공유 실패: ' + error.message + '\n\n템플릿 변수명과 JSON이 일치하는지 확인해주세요.');
+            }
+        }
+
+        // 딥링크 URL만 수동 생성 (참고용)
+        function generateDeepLinkURL() {
+            const appkey = document.getElementById('appkey').value.trim();
+            const templateId = document.getElementById('templateId').value;
+            let args;
+            try {
+                args = JSON.parse(document.getElementById('templateArgs').value);
+            } catch (e) {
+                alert('JSON 형식이 올바르지 않습니다!');
+                return;
+            }
+
+            // 실제 SDK가 생성하는 형식과 유사하게 (extras JSON 인코딩)
+            const extras = encodeURIComponent(JSON.stringify({
+                "template_args": args
+            }));
+
+            const deepLink = `kakaolink://send?appkey=${appkey}&template_id=${templateId}&extras=${extras}`;
+            
+            document.getElementById('result').innerHTML = `
+                <strong>🔗 생성된 딥링크 URL:</strong><br>
+                <a href="${deepLink}" target="_blank" class="text-blue-600 underline break-all">${deepLink}</a><br><br>
+                <span class="text-xs text-gray-500">이 URL을 복사해서 버튼에 넣거나 브라우저에 붙여넣기 가능</span>
+            `;
+            document.getElementById('result').classList.remove('hidden');
+            
+            // 클립보드 복사
+            navigator.clipboard.writeText(deepLink).then(() => {
+                alert('✅ 딥링크 URL이 클립보드에 복사되었습니다!');
+            });
+        }
+
+        // 페이지 로드 시 Tailwind 실행
+        window.onload = initTailwind;
+    </script>
+</body>
+</html>
