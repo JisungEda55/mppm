@@ -3,163 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bounce 2 Style Gooey Counter</title>
+    <title>Bounce 2: Precision Counter</title>
     <style>
-        /* 기본 배경 설정 */
-        body {
-            background: radial-gradient(circle at center, #355cc9 0%, #0a1931 100%);
+        :root {
+            --bg-color: #050a15;
+            --accent-blue: #3b82f6;
+            --glow-color: rgba(59, 130, 246, 0.5);
+            --text-color: #ffffff;
+            --transition-speed: 0.8s;
+            --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             overflow: hidden;
-            color: white;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
         }
 
-        /* 끈적한 효과를 위한 컨테이너 */
-        .counter-wrapper {
-            display: flex;
-            font-size: clamp(8rem, 20vw, 15rem); /* 반응형 크기 조절 */
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            /* 💡 핵심: SVG 필터 적용 */
-            filter: url('#gooey'); 
+        /* 배경 노이즈 효과 (시네마틱 질감) */
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.04;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* 개별 숫자 박스 */
-        .digit-box {
+        /* 메인 컨테이너 */
+        .stage {
             position: relative;
-            width: 1ch;
-            height: 1em;
-            line-height: 1em;
-            overflow: hidden;
-            margin: 0 0.05em;
+            display: flex;
+            gap: 20px;
+            /* 💡 멀티 스테이지 SVG 필터 적용 */
+            filter: url(#advanced-gooey) drop-shadow(0 0 20px var(--glow-color));
         }
 
-        /* 숫자가 나열된 스트립 */
+        /* 숫자 박스 (이미지의 사각형 재현) */
+        .digit-container {
+            position: relative;
+            width: 160px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .digit-strip {
             display: flex;
             flex-direction: column;
+            align-items: center;
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            /* 💡 탄성 있는 애니메이션 (Bounce) */
-            transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.5s;
-            
-            /* 발광 효과 */
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 
-                         0 0 30px rgba(100, 200, 255, 0.4);
+            transition: transform var(--transition-speed) var(--ease-elastic);
+            will-change: transform;
         }
 
-        /* 필터용 SVG 숨김 */
-        .gooey-filter-svg {
-            position: absolute;
-            width: 0;
-            height: 0;
-            visibility: hidden;
+        .digit {
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 160px;
+            font-weight: 800;
+            color: var(--text-color);
+            user-select: none;
         }
 
-        /* 컨트롤 버튼 (선택사항) */
-        #restart-btn {
-            position: absolute;
-            bottom: 10%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
+        /* 다시 시작 버튼 */
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            z-index: 100;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: 0.3s;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
         }
-        #restart-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="counter-wrapper">
-        <div class="digit-box" id="digit-tens">
-            <div class="digit-strip">
-                <div>&nbsp;</div> <div>1</div>
+    <div class="grain-overlay"></div>
+
+    <div class="stage">
+        <div class="digit-container">
+            <div class="digit-strip" id="tens-strip">
+                <div class="digit">0</div>
+                <div class="digit">1</div>
             </div>
         </div>
-        <div class="digit-box" id="digit-ones">
+        <div class="digit-container">
             <div class="digit-strip" id="ones-strip">
                 </div>
         </div>
     </div>
 
-    <button id="restart-btn">다시 시작</button>
+    <div class="controls">
+        <button onclick="resetCounter()">Initialize Sequence</button>
+    </div>
 
-    <svg class="gooey-filter-svg">
+    <svg class="gooey-filter-svg" style="display:none;">
         <defs>
-            <filter id="gooey">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <filter id="advanced-gooey">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
                 <feColorMatrix in="blur" mode="matrix" 
                     values="1 0 0 0 0  
                             0 1 0 0 0  
                             0 0 1 0 0  
-                            0 0 0 20 -10" result="gooey" />
+                            0 0 0 25 -12" result="goo" />
+                <feBlend in="SourceGraphic" in2="goo" mode="screen" />
             </filter>
         </defs>
     </svg>
 
     <script>
         const onesStrip = document.getElementById('ones-strip');
-        const tensStrip = document.querySelector('#digit-tens .digit-strip');
-        const restartBtn = document.getElementById('restart-btn');
-
-        // 0부터 9까지 숫자 생성
-        let numbersHtml = '';
-        for (let i = 0; i <= 9; i++) {
-            numbersHtml += `<div>${i}</div>`;
-        }
-        onesStrip.innerHTML = numbersHtml;
+        const tensStrip = document.getElementById('tens-strip');
+        const DIGIT_HEIGHT = 220;
+        
+        // 0-9 숫자 생성
+        onesStrip.innerHTML = Array.from({length: 10}, (_, i) => `<div class="digit">${i}</div>`).join('');
 
         let timeLeft = 10;
-        let timerId = null;
+        let timer = null;
 
-        function updateDisplay() {
+        function update() {
             const tens = Math.floor(timeLeft / 10);
             const ones = timeLeft % 10;
 
             // 일의 자리 이동
-            onesStrip.style.transform = `translateY(-${ones}em)`;
+            onesStrip.style.transform = `translateY(-${ones * DIGIT_HEIGHT}px)`;
+            
+            // 십의 자리 이동 (10에서 9로 갈 때의 부드러운 전환)
+            tensStrip.style.transform = `translateY(-${tens * DIGIT_HEIGHT}px)`;
 
-            // 십의 자리 처리 (10일 때만 보이고 나머지는 위로 숨김)
-            if (tens === 1) {
-                tensStrip.style.transform = `translateY(-1em)`;
-                tensStrip.style.opacity = '1';
+            // 0초 도달 시 연출
+            if (timeLeft === 0) {
+                document.querySelector('.stage').style.filter = "url(#advanced-gooey) drop-shadow(0 0 50px #ff4b2b)";
             } else {
-                tensStrip.style.transform = `translateY(0)`;
-                tensStrip.style.opacity = '0.2'; // 살짝 잔상 효과
+                document.querySelector('.stage').style.filter = "url(#advanced-gooey) drop-shadow(0 0 20px var(--glow-color))";
             }
         }
 
-        function startCountdown() {
-            clearInterval(timerId);
+        function start() {
+            if (timer) clearInterval(timer);
             timeLeft = 10;
-            updateDisplay();
+            update();
 
-            timerId = setInterval(() => {
-                timeLeft--;
-                if (timeLeft < 0) {
-                    clearInterval(timerId);
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    update();
                 } else {
-                    updateDisplay();
+                    clearInterval(timer);
                 }
             }, 1000);
         }
 
-        restartBtn.addEventListener('click', startCountdown);
+        function resetCounter() {
+            start();
+        }
 
         // 초기 실행
-        startCountdown();
+        window.onload = start;
     </script>
 </body>
 </html>
