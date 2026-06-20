@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>duo</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.panel {
+    flex: 1;
+    position: relative;
+    background: #111;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.fallback {
+    position: absolute;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    font-family: sans-serif;
+    gap: 16px;
+}
+
+.btn {
+    padding: 12px 20px;
+    background: #00ffa3;
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="panel">
+        <iframe
+            src="https://www.youtube.com/embed/k0GyQ90agQ8?autoplay=1"
+            allowfullscreen
+            allow="autoplay; fullscreen">
+        </iframe>
+    </div>
+
+    <div class="panel">
+
+        <iframe
+            id="chzzkFrame"
+            src="https://chzzk.naver.com/live/dae2de8eaa005a59163f2e4c045e1aa1">
+        </iframe>
+
+        <div class="fallback" id="fallback">
+            <a
+                class="btn"
+                target="_blank"
+                href="https://chzzk.naver.com/live/dae2de8eaa005a59163f2e4c045e1aa1">
+                치지직에서 열기
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+setTimeout(() => {
+    try {
+        const frame = document.getElementById('chzzkFrame');
+
+        frame.contentWindow.location.href;
+
+    } catch(e) {
+        document.getElementById('fallback').style.display = 'flex';
+    }
+}, 3000);
+</script>
+
+</body>
+</html>
