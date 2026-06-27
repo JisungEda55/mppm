@@ -3,202 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nano</title>
+    <title>실시간 전역일 위젯 생성기</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        /* LINE Seed 폰트 등록 */
+        @font-face {
+            font-family: 'LineSeed';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'LineSeed', -apple-system, sans-serif;
+            font-weight: 700;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f4f6fa;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 40px;
+            padding: 20px;
             margin: 0;
+            min-height: 100vh;
         }
 
-        /* 캡처할 타겟 컨테이너 (배경 투명) */
-        #widget-container {
-            width: 500px;
-            padding: 20px;
+        /* 스타일 선택 탭 스타일 */
+        .tab-menu {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 9px;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        /* 모바일 대응 컨테이너 (너비 100% 대응, 최대 너비 고정) */
+        .capture-area {
+            width: 100%;
+            max-width: 360px; /* 모바일 위젯 표준 너비 대응 */
+            padding: 10px;
             background: transparent;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        /* 상단 영역 (프로필/정보박스 배치) */
-        .top-section {
+        /* ==================== [스타일 1: 오리지널 순정] ==================== */
+        .style-classic {
+            --bg-card: #ffffff;
+            --border-card: 2px solid #000000;
+            --bar-dday: #2b56c6;
+            --bg-progress: #5393ff;
+            --fill-progress: #0d369c;
+            --text-color: #000000;
+        }
+
+        .style-classic .top-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            background: transparent;
         }
 
-        /* 왼쪽 원형 영역 */
-        .profile-circle {
-            width: 130px;
-            height: 130px;
+        .style-classic .profile-circle {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             background: transparent;
         }
 
-        /* 오른쪽 정보 카드 */
-        .info-card {
-            border: 2.5px solid #000000;
+        .style-classic .info-card {
+            border: var(--border-card);
+            border-radius: 20px;
+            padding: 12px 16px;
+            background-color: var(--bg-card);
+            width: calc(100% - 115px);
+        }
+
+        .style-classic .name { font-size: 18px; margin-bottom: 8px; color: var(--text-color); }
+        .style-classic .date-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+        .style-classic .date-row .label { color: #888888; }
+        .style-classic .time-left { font-size: 12px; text-align: center; margin-top: 8px; color: #333333; }
+        .style-classic .dday-bar { background-color: var(--bar-dday); color: #ffffff; padding: 10px 14px; border-radius: 8px 8px 0 0; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .style-classic .progress-section { background-color: var(--bg-progress); color: #ffffff; padding: 16px; border-radius: 0 0 8px 8px; margin-top: -12px; }
+        .style-classic .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        .style-classic .progress-bar-container { width: 100%; height: 10px; background-color: rgba(255, 255, 255, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+        .style-classic .progress-bar-fill { height: 100%; background-color: var(--fill-progress); }
+        .style-classic .progress-percentage { text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.9); }
+
+        /* ==================== [스타일 2: 트렌디 힙 요소를 섞은 뉴 스타일] ==================== */
+        .style-trendy {
+            --bg-card: #ffffff;
+            --text-color: #111827;
+            background: linear-gradient(135deg, #e0e7ff 0%, #e0f2fe 100%);
             border-radius: 24px;
-            padding: 16px 20px;
-            background-color: #ffffff;
-            width: 200px;
-            box-sizing: border-box;
-        }
-
-        .info-card .name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #000000;
-        }
-
-        .info-card .date-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #555555;
-            margin-bottom: 4px;
-        }
-
-        .info-card .date-row .label {
-            color: #888888;
-        }
-
-        .info-card .date-row .date {
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .info-card .time-left {
-            font-size: 13px;
-            font-weight: bold;
-            color: #333333;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        /* 중단 D-Day 바 */
-        .dday-bar {
-            background-color: #2b56c6;
-            color: #ffffff;
-            padding: 12px 20px;
-            border-radius: 8px 8px 0 0;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* 하단 프로그레스 바 영역 */
-        .progress-section {
-            background-color: #5393ff;
-            color: #ffffff;
             padding: 20px;
-            border-radius: 0 0 8px 8px;
-            margin-top: -15px;
+            border: 3px solid #111827;
+            box-shadow: 6px 6px 0px #111827; /* 네오 브루탈리즘 스타일 그림자 */
         }
 
-        .progress-header {
+        .style-trendy .top-section {
             display: flex;
+            flex-direction: row-reverse; /* 트렌디한 비대칭 배치 */
             justify-content: space-between;
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 12px;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
-        /* 게이지 바 스타일 */
-        .progress-bar-container {
+        .style-trendy .profile-circle {
+            width: 75px;
+            height: 75px;
+            border-radius: 20px; /* 각진 둥근 스퀘어 */
+            border: 3px dashed #111827;
+        }
+
+        .style-trendy .info-card {
+            width: calc(100% - 90px);
+        }
+
+        .style-trendy .name { font-size: 20px; color: #4f46e5; margin-bottom: 6px; }
+        .style-trendy .date-row { display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px; color: #4b5563; }
+        .style-trendy .date-row .label { background: #111827; color: #fff; padding: 1px 5px; border-radius: 4px; font-size: 10px; }
+        .style-trendy .time-left { font-size: 13px; color: #111827; margin-top: 8px; background: #f3f4f6; padding: 4px 8px; border-radius: 8px; border: 1.5px solid #111827; width: max-content;}
+
+        .style-trendy .dday-bar { background: #111827; color: #fff; padding: 8px 12px; border-radius: 12px; font-size: 14px; font-weight: 900; display: inline-flex; align-items: center; gap: 6px; width: max-content; border: 2px solid #111827; margin-top: 5px;}
+        .style-trendy .progress-section { background: #ffffff; padding: 16px; border-radius: 16px; border: 2.5px solid #111827; box-shadow: 4px 4px 0px #111827; margin-top: 5px; }
+        .style-trendy .progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #111827; }
+        .style-trendy .progress-bar-container { width: 100%; height: 14px; background-color: #f3f4f6; border-radius: 30px; overflow: hidden; margin-bottom: 6px; border: 2px solid #111827; }
+        .style-trendy .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #3b82f6); border-radius: 30px; }
+        .style-trendy .progress-percentage { text-align: right; font-size: 12px; color: #4f46e5; }
+
+        /* 공통 UI 하단 제어부 */
+        .action-container {
             width: 100%;
-            height: 12px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 8px;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
         }
 
-        .progress-bar-fill {
-            width: 0%; /* JS에서 동적 제어 */
-            height: 100%;
-            background-color: #0d369c;
-            border-radius: 6px 0 0 6px;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .progress-percentage {
-            text-align: right;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        /* 생성 버튼 스타일 */
         .download-btn {
-            margin-top: 30px;
-            padding: 12px 24px;
+            width: 100%;
+            padding: 14px;
             background-color: #2b56c6;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 15px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(43, 86, 198, 0.2);
         }
 
-        .download-btn:hover {
-            background-color: #1e3f96;
-        }
+        .download-btn:hover { background-color: #1e3f96; }
 
-        /* iOS 대응 프리뷰 오버레이 팝업 */
+        /* iOS 오버레이 팝업 */
         #image-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            color: #ffffff;
+            padding: 20px;
         }
 
         #image-overlay .guide-text {
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 14px;
+            margin-bottom: 16px;
             text-align: center;
-            line-height: 1.5;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 20px;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 15px;
+            color: #fff;
         }
 
         #image-overlay img {
-            max-width: 90%;
-            max-height: 70%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 100%;
+            max-height: 65%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             background: transparent;
         }
 
         #image-overlay .close-btn {
-            margin-top: 25px;
-            padding: 10px 20px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border: 1px solid #ffffff;
-            color: #ffffff;
-            border-radius: 6px;
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: #fff;
+            border: none;
+            color: #000;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
         }
@@ -206,7 +224,12 @@
 </head>
 <body>
 
-    <div id="widget-container">
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="switchStyle('classic', this)">기존 1 (오리지널)</button>
+        <button class="tab-btn" onclick="switchStyle('trendy', this)">신규 2 (힙 트렌디)</button>
+    </div>
+
+    <div id="widget-container" class="capture-area style-classic">
         <div class="top-section">
             <div class="profile-circle"></div>
             <div class="info-card">
@@ -219,118 +242,114 @@
                     <span class="label">전역</span>
                     <span class="date">2026.10.09</span>
                 </div>
-                <div id="time-left-text" class="time-left">- 계산 중 -</div>
+                <div id="time-left-text" class="time-left">계산 중...</div>
             </div>
         </div>
 
-        <div class="dday-bar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
-            <span id="dday-text">D-000</span>
-        </div>
+        <div>
+            <div class="dday-bar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span id="dday-text">D-000</span>
+            </div>
 
-        <div class="progress-section">
-            <div class="progress-header">
-                <span>전역 ❯</span>
-                <span>2026년 10월 09일</span>
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>전역 ❯</span>
+                    <span>2026년 10월 09일</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <div id="percentage-text" class="progress-percentage">0.000000%</div>
             </div>
-            <div class="progress-bar-container">
-                <div id="progress-bar-fill" class="progress-bar-fill"></div>
-            </div>
-            <div id="percentage-text" class="progress-percentage">0.000000%</div>
         </div>
     </div>
 
-    <button class="download-btn" onclick="generateImageForIOS()">이미지 생성하기</button>
+    <div class="action-container">
+        <button class="download-btn" onclick="generateHighQualityImage()">위젯 이미지 생성하기</button>
+    </div>
 
     <div id="image-overlay" onclick="closeOverlay(event)">
-        <div class="guide-text">아래 이미지를 <b>길게 누른 뒤</b><br>['사진' 앱에 저장]을 선택해주세요.</div>
-        <img id="preview-image" src="" alt="위젯 이미지">
-        <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">닫기</button>
+        <div class="guide-text">나타난 위젯 이미지를 <b>길게 꾹 눌러서</b><br>[사진 앱에 추가/저장] 해주세요.</div>
+        <img id="preview-image" src="" alt="위젯 고화질 프리뷰">
+        <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">창 닫기</button>
     </div>
 
     <script>
-        // 고정 데이터 기준일 설정
         const startDate = new Date('2025-02-10T00:00:00');
         const endDate = new Date('2026-10-09T00:00:00');
 
-        function updateMilitaryCalculations() {
-            const now = new Date();
-
-            // 1. 복무 비율 계산 (소수점 6자리 정확도)
-            const totalPeriod = endDate - startDate;
-            const elapsedPeriod = now - startDate;
+        // 스타일 토글 함수
+        function switchStyle(styleName, btnElement) {
+            const container = document.getElementById('widget-container');
+            const buttons = document.querySelectorAll('.tab-btn');
             
-            let percentage = (elapsedPeriod / totalPeriod) * 100;
-            if (percentage < 0) percentage = 0;
-            if (percentage > 100) percentage = 100;
+            buttons.forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
 
-            document.getElementById('percentage-text').innerText = percentage.toFixed(6) + '%';
-            document.getElementById('progress-bar-fill').style.width = percentage.toFixed(6) + '%';
-
-            // 2. 디데이(D-Day) 계산
-            const timeDiff = endDate - now;
-            const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            
-            if (dDay > 0) {
-                document.getElementById('dday-text').innerText = 'D-' + dDay;
-            } else if (dDay === 0) {
-                document.getElementById('dday-text').innerText = 'D-Day';
+            if(styleName === 'classic') {
+                container.className = "capture-area style-classic";
             } else {
-                document.getElementById('dday-text').innerText = '전역 축하합니다!';
-            }
-
-            // 3. 남은 기간 상세 계산 (개월 및 일수)
-            let currentYear = now.getFullYear();
-            let currentMonth = now.getMonth();
-            let currentDate = now.getDate();
-
-            let targetYear = endDate.getFullYear();
-            let targetMonth = endDate.getMonth();
-            let targetDate = endDate.getDate();
-
-            let monthsLeft = (targetYear - currentYear) * 12 + (targetMonth - currentMonth);
-            let daysLeft = targetDate - currentDate;
-
-            if (daysLeft < 0) {
-                // 이전 달의 총 일수를 구해서 더해줌
-                const previousMonth = new Date(targetYear, targetMonth, 0).getDate();
-                monthsLeft -= 1;
-                daysLeft += previousMonth;
-            }
-
-            if (monthsLeft < 0) {
-                document.getElementById('time-left-text').innerText = "전역일이 지났습니다.";
-            } else {
-                document.getElementById('time-left-text').innerText = `${monthsLeft}개월 ${daysLeft}일 남았습니다`;
+                container.className = "capture-area style-trendy";
             }
         }
 
-        // 페이지 로드 시 즉시 연산 수행
-        updateMilitaryCalculations();
+        // 시간 데이터 갱신 계산 연산식
+        function calculateMilitaryData() {
+            const now = new Date();
 
-        // 5분(300,000ms) 주기로 실시간 수정 반복 실행
-        setInterval(updateMilitaryCalculations, 300000);
+            // 1. 퍼센트 소수점 6자리 처리
+            const total = endDate - startDate;
+            const current = now - startDate;
+            let percent = (current / total) * 100;
+            if(percent < 0) percent = 0;
+            if(percent > 100) percent = 100;
 
-        // 이미지 생성 스크립트 (이전과 동일하게 고화질/배경투명 유지)
-        function generateImageForIOS() {
+            document.getElementById('percentage-text').innerText = percent.toFixed(6) + '%';
+            document.getElementById('progress-bar-fill').style.width = percent.toFixed(6) + '%';
+
+            // 2. 디데이 카운팅
+            const diff = endDate - now;
+            const dday = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('dday-text').innerText = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
+
+            // 3. 남은 개월 및 일자
+            let monthsLeft = (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth());
+            let daysLeft = endDate.getDate() - now.getDate();
+
+            if (daysLeft < 0) {
+                const prevMonthDays = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+                monthsLeft -= 1;
+                daysLeft += prevMonthDays;
+            }
+            
+            document.getElementById('time-left-text').innerText = monthsLeft >= 0 ? `${monthsLeft}개월 ${daysLeft}일 남았습니다` : '고생하셨습니다!';
+        }
+
+        // 실시간 갱신 실행 및 5분 주기 루프 설정
+        calculateMilitaryData();
+        setInterval(calculateMilitaryData, 300000);
+
+        // 초고화질 이미지 프리뷰 빌드업 (iOS 대응)
+        function generateHighQualityImage() {
             const container = document.getElementById('widget-container');
             const overlay = document.getElementById('image-overlay');
             const previewImg = document.getElementById('preview-image');
             
+            // scale 4배 세팅으로 디테일 뭉개짐 전면 방지 및 투명 배경
             html2canvas(container, {
-                backgroundColor: null, 
-                scale: 3,             
+                backgroundColor: null,
+                scale: 4, 
                 logging: false,
                 useCORS: true
             }).then(canvas => {
-                const imageData = canvas.toDataURL('image/png');
-                previewImg.src = imageData;
+                previewImg.src = canvas.toDataURL('image/png');
                 overlay.style.display = 'flex';
-            }).catch(error => {
-                console.error('이미지 생성 오류:', error);
-                alert('이미지 생성에 실패했습니다.');
+            }).catch(err => {
+                console.error(err);
+                alert('이미지 생성 도중 에러 발생');
             });
         }
 
@@ -340,6 +359,5 @@
             }
         }
     </script>
-
 </body>
 </html>
