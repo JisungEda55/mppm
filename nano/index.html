@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>전역일 계산기 위젯 이미지 생성기</title>
+    <title>nano</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -127,10 +127,11 @@
         }
 
         .progress-bar-fill {
-            width: 82.975455%;
+            width: 0%; /* JS에서 동적 제어 */
             height: 100%;
             background-color: #0d369c;
             border-radius: 6px 0 0 6px;
+            transition: width 0.5s ease-in-out;
         }
 
         .progress-percentage {
@@ -188,7 +189,7 @@
             max-width: 90%;
             max-height: 70%;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            background: transparent; /* 투명 유지 확인용 */
+            background: transparent;
         }
 
         #image-overlay .close-btn {
@@ -218,7 +219,7 @@
                     <span class="label">전역</span>
                     <span class="date">2026.10.09</span>
                 </div>
-                <div class="time-left">3개월 12일 남았습니다</div>
+                <div id="time-left-text" class="time-left">- 계산 중 -</div>
             </div>
         </div>
 
@@ -226,7 +227,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
             </svg>
-            <span>D-104</span>
+            <span id="dday-text">D-000</span>
         </div>
 
         <div class="progress-section">
@@ -235,9 +236,9 @@
                 <span>2026년 10월 09일</span>
             </div>
             <div class="progress-bar-container">
-                <div class="progress-bar-fill"></div>
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
             </div>
-            <div class="progress-percentage">82.975455%</div>
+            <div id="percentage-text" class="progress-percentage">0.000000%</div>
         </div>
     </div>
 
@@ -250,22 +251,81 @@
     </div>
 
     <script>
+        // 고정 데이터 기준일 설정
+        const startDate = new Date('2025-02-10T00:00:00');
+        const endDate = new Date('2026-10-09T00:00:00');
+
+        function updateMilitaryCalculations() {
+            const now = new Date();
+
+            // 1. 복무 비율 계산 (소수점 6자리 정확도)
+            const totalPeriod = endDate - startDate;
+            const elapsedPeriod = now - startDate;
+            
+            let percentage = (elapsedPeriod / totalPeriod) * 100;
+            if (percentage < 0) percentage = 0;
+            if (percentage > 100) percentage = 100;
+
+            document.getElementById('percentage-text').innerText = percentage.toFixed(6) + '%';
+            document.getElementById('progress-bar-fill').style.width = percentage.toFixed(6) + '%';
+
+            // 2. 디데이(D-Day) 계산
+            const timeDiff = endDate - now;
+            const dDay = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            if (dDay > 0) {
+                document.getElementById('dday-text').innerText = 'D-' + dDay;
+            } else if (dDay === 0) {
+                document.getElementById('dday-text').innerText = 'D-Day';
+            } else {
+                document.getElementById('dday-text').innerText = '전역 축하합니다!';
+            }
+
+            // 3. 남은 기간 상세 계산 (개월 및 일수)
+            let currentYear = now.getFullYear();
+            let currentMonth = now.getMonth();
+            let currentDate = now.getDate();
+
+            let targetYear = endDate.getFullYear();
+            let targetMonth = endDate.getMonth();
+            let targetDate = endDate.getDate();
+
+            let monthsLeft = (targetYear - currentYear) * 12 + (targetMonth - currentMonth);
+            let daysLeft = targetDate - currentDate;
+
+            if (daysLeft < 0) {
+                // 이전 달의 총 일수를 구해서 더해줌
+                const previousMonth = new Date(targetYear, targetMonth, 0).getDate();
+                monthsLeft -= 1;
+                daysLeft += previousMonth;
+            }
+
+            if (monthsLeft < 0) {
+                document.getElementById('time-left-text').innerText = "전역일이 지났습니다.";
+            } else {
+                document.getElementById('time-left-text').innerText = `${monthsLeft}개월 ${daysLeft}일 남았습니다`;
+            }
+        }
+
+        // 페이지 로드 시 즉시 연산 수행
+        updateMilitaryCalculations();
+
+        // 5분(300,000ms) 주기로 실시간 수정 반복 실행
+        setInterval(updateMilitaryCalculations, 300000);
+
+        // 이미지 생성 스크립트 (이전과 동일하게 고화질/배경투명 유지)
         function generateImageForIOS() {
             const container = document.getElementById('widget-container');
             const overlay = document.getElementById('image-overlay');
             const previewImg = document.getElementById('preview-image');
             
-            // html2canvas 옵션 (배경 투명화 및 고화질)
             html2canvas(container, {
                 backgroundColor: null, 
-                scale: 3,             // 롱프레스 저장 시 화질 저하 방지를 위해 배율을 3으로 상향
+                scale: 3,             
                 logging: false,
                 useCORS: true
             }).then(canvas => {
-                // Base64 PNG 이미지 데이터 추출
                 const imageData = canvas.toDataURL('image/png');
-                
-                // img 태그에 소스 주입 및 팝업 표시
                 previewImg.src = imageData;
                 overlay.style.display = 'flex';
             }).catch(error => {
@@ -274,7 +334,6 @@
             });
         }
 
-        // 이미지 외의 블랙 영역 터치 시 닫히도록 설정
         function closeOverlay(event) {
             if(event.target.id === 'image-overlay') {
                 document.getElementById('image-overlay').style.display = 'none';
