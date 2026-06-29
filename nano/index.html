@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nano</title>
+    <title>Military D-Day Widget</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* LINE Seed 폰트 등록 */
@@ -40,6 +40,8 @@
             margin-bottom: 25px;
             width: 100%;
             max-width: 360px;
+            position: relative;
+            z-index: 10;
         }
 
         .tab-btn {
@@ -60,116 +62,245 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
 
-        /* 모바일 대응 컨테이너 (너비 100% 대응, 최대 너비 고정) */
-        .capture-area {
+        .widget-wrapper {
             width: 100%;
             max-width: 360px;
+            position: relative;
+        }
+
+        /* 모바일 대응 컨테이너 공통 */
+        .capture-area {
+            width: 100%;
             padding: 10px;
             background: transparent;
+        }
+
+        /* ==================== [스타일 1: 오리지널 순정] ==================== */
+        #widget-classic {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        /* ==================== [스타일 1: 오리지널 순정] ==================== */
-        .style-classic {
-            --bg-card: #ffffff;
-            --border-card: 2px solid #000000;
-            --bar-dday: #2b56c6;
-            --bg-progress: #5393ff;
-            --fill-progress: #0d369c;
-            --text-color: #000000;
-        }
-
-        .style-classic .top-section {
+        #widget-classic .top-section {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
         }
 
-        .style-classic .profile-circle {
+        #widget-classic .profile-circle {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: transparent;
+            background: #e2e8f0;
         }
 
-        .style-classic .info-card {
-            border: var(--border-card);
+        #widget-classic .info-card {
+            border: 2px solid #000;
             border-radius: 20px;
             padding: 12px 16px;
-            background-color: var(--bg-card);
+            background-color: #fff;
             width: calc(100% - 115px);
         }
 
-        .style-classic .name { font-size: 18px; margin-bottom: 8px; color: var(--text-color); }
-        .style-classic .date-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
-        .style-classic .date-row .label { color: #888888; }
-        .style-classic .time-left { font-size: 12px; text-align: center; margin-top: 8px; color: #333333; }
-        .style-classic .dday-bar { background-color: var(--bar-dday); color: #ffffff; padding: 10px 14px; border-radius: 8px 8px 0 0; font-size: 14px; display: flex; align-items: center; gap: 6px; }
-        .style-classic .progress-section { background-color: var(--bg-progress); color: #ffffff; padding: 16px; border-radius: 0 0 8px 8px; margin-top: -12px; }
-        .style-classic .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
-        .style-classic .progress-bar-container { width: 100%; height: 10px; background-color: rgba(255, 255, 255, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
-        .style-classic .progress-bar-fill { height: 100%; background-color: var(--fill-progress); }
-        .style-classic .progress-percentage { text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.9); }
+        #widget-classic .name { font-size: 18px; margin-bottom: 8px; color: #000; }
+        #widget-classic .date-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+        #widget-classic .date-row .label { color: #888888; }
+        #widget-classic .time-left { font-size: 12px; text-align: center; margin-top: 8px; color: #333333; }
+        #widget-classic .dday-bar { background-color: #2b56c6; color: #ffffff; padding: 10px 14px; border-radius: 8px 8px 0 0; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        #widget-classic .progress-section { background-color: #5393ff; color: #ffffff; padding: 16px; border-radius: 0 0 8px 8px; margin-top: -12px; }
+        #widget-classic .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        #widget-classic .progress-bar-container { width: 100%; height: 10px; background-color: rgba(255, 255, 255, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+        #widget-classic .progress-bar-fill { height: 100%; background-color: #0d369c; }
+        #widget-classic .progress-percentage { text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.9); }
 
         /* ==================== [스타일 2: 트렌디 힙 스타일] ==================== */
-        .style-trendy {
-            --bg-card: #ffffff;
-            --text-color: #111827;
-            /* 기본 화면 프리뷰용 배경 (저장 시 제거됨) */
-            background: linear-gradient(135deg, #e0e7ff 0%, #e0f2fe 100%);
+        #widget-trendy {
+            position: relative;
+            min-height: 280px;
+            display: none; /* 기본은 숨김 */
+            background: #f4f6fa; /* 프리뷰용 배경 */
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 16px 16px;
             border-radius: 24px;
-            padding: 20px;
-            border: 3px solid #111827;
-            box-shadow: 6px 6px 0px #111827;
-            transition: background 0.2s, border 0.2s, box-shadow 0.2s;
+            overflow: hidden;
         }
 
-        /* html2canvas 캡처 중 강제 적용될 투명화 클래스 */
-        .style-trendy.is-capturing {
+        /* 캡처 시 배경 투명화 */
+        #widget-trendy.is-capturing {
             background: transparent !important;
-            border-color: transparent !important;
-            box-shadow: none !important;
         }
 
-        .style-trendy .top-section {
+        .trendy-layout {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 20px 10px;
+        }
+
+        /* 힙한 카드 공통 스타일 (네오 브루탈리즘) */
+        .neo-card {
+            background: #ffffff;
+            border: 2.5px solid #111827;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px #111827;
+            padding: 16px;
+            position: relative;
+        }
+
+        /* 상단 인포 카드 (살짝 왼쪽으로 삐뚤어지게) */
+        .trendy-info-card {
+            width: 85%;
+            transform: rotate(-3deg);
+            z-index: 2;
+            margin-left: 5%;
+        }
+
+        .trendy-info-card .card-header {
             display: flex;
-            flex-direction: row-reverse;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            gap: 12px;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 12px;
         }
 
-        .style-trendy .profile-circle {
-            width: 75px;
-            height: 75px;
+        .trendy-info-card .profile-mock {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #a7f3d0, #3b82f6);
+            border-radius: 12px;
+            border: 2px solid #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .trendy-info-card .name {
+            font-size: 20px;
+            color: #111827;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .trendy-info-card .badge {
+            background: #111827;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .trendy-info-card .dates {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .trendy-info-card .dates span {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        /* 하단 프로그레스 카드 (살짝 오른쪽으로 삐뚤어지게 겹침) */
+        .trendy-progress-card {
+            width: 90%;
+            transform: rotate(2deg);
+            z-index: 3;
+            margin-left: auto;
+            margin-top: -15px;
+            background: #eef2ff; /* 살짝 푸른빛 */
+        }
+
+        .trendy-progress-card .progress-text-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .trendy-time-left {
+            font-size: 13px;
+            color: #111827;
+            background: #fff;
+            border: 1.5px solid #111827;
+            padding: 4px 10px;
             border-radius: 20px;
-            border: 3px dashed #111827;
         }
 
-        /* 캡처 시 가이드 점선 숨기기 */
-        .style-trendy.is-capturing .profile-circle {
-            border-color: transparent !important;
+        .trendy-percentage {
+            font-size: 16px;
+            color: #4f46e5;
+            text-shadow: 1px 1px 0px #111827;
         }
 
-        .style-trendy .info-card {
-            width: calc(100% - 90px);
+        .trendy-bar-bg {
+            width: 100%;
+            height: 16px;
+            background: #fff;
+            border: 2px solid #111827;
+            border-radius: 30px;
+            overflow: hidden;
         }
 
-        .style-trendy .name { font-size: 20px; color: #4f46e5; margin-bottom: 6px; }
-        .style-trendy .date-row { display: flex; gap: 8px; font-size: 11px; margin-bottom: 2px; color: #4b5563; }
-        .style-trendy .date-row .label { background: #111827; color: #fff; padding: 1px 5px; border-radius: 4px; font-size: 10px; }
-        .style-trendy .time-left { font-size: 13px; color: #111827; margin-top: 8px; background: #f3f4f6; padding: 4px 8px; border-radius: 8px; border: 1.5px solid #111827; width: max-content;}
+        .trendy-bar-fill {
+            height: 100%;
+            background: #3b82f6;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.2) 10px,
+                rgba(255,255,255,0.2) 20px
+            );
+            border-right: 2px solid #111827;
+        }
 
-        .style-trendy .dday-bar { background: #111827; color: #fff; padding: 8px 12px; border-radius: 12px; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; width: max-content; border: 2px solid #111827; margin-top: 5px;}
-        .style-trendy .progress-section { background: #ffffff; padding: 16px; border-radius: 16px; border: 2.5px solid #111827; box-shadow: 4px 4px 0px #111827; margin-top: 5px; }
-        .style-trendy .progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #111827; }
-        .style-trendy .progress-bar-container { width: 100%; height: 14px; background-color: #f3f4f6; border-radius: 30px; overflow: hidden; margin-bottom: 6px; border: 2px solid #111827; }
-        .style-trendy .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #3b82f6); border-radius: 30px; }
-        .style-trendy .progress-percentage { text-align: right; font-size: 12px; color: #4f46e5; }
+        /* 떠다니는 스티커들 */
+        .sticker-dday {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #a3e635; /* 네온 그린 */
+            color: #111827;
+            border: 2px solid #111827;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 16px;
+            transform: rotate(10deg);
+            z-index: 4;
+            box-shadow: 2px 2px 0px #111827;
+        }
 
-        /* 공통 UI 하단 제어부 */
+        .sticker-star {
+            position: absolute;
+            bottom: 15px;
+            left: 10px;
+            font-size: 24px;
+            transform: rotate(-15deg);
+            z-index: 4;
+            color: #fbbf24;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .sticker-flower {
+            position: absolute;
+            top: 40%;
+            left: -5px;
+            font-size: 20px;
+            z-index: 1;
+            filter: drop-shadow(1px 1px 0px #000);
+        }
+
+        /* ==================== 공통 UI 제어부 ==================== */
         .action-container {
             width: 100%;
             max-width: 360px;
@@ -181,18 +312,18 @@
 
         .download-btn {
             width: 100%;
-            padding: 14px;
-            background-color: #2b56c6;
+            padding: 16px;
+            background-color: #111827;
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(43, 86, 198, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .download-btn:hover { background-color: #1e3f96; }
+        .download-btn:active { transform: scale(0.98); }
 
         /* iOS 오버레이 팝업 */
         #image-overlay {
@@ -227,86 +358,129 @@
 
         #image-overlay .close-btn {
             margin-top: 20px;
-            padding: 10px 24px;
+            padding: 12px 28px;
             background: #fff;
             border: none;
             color: #000;
-            border-radius: 8px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
         }
     </style>
 </head>
 <body>
 
     <div class="tab-menu">
-        <button class="tab-btn active" onclick="switchStyle('classic', this)">기존 1 (오리지널)</button>
-        <button class="tab-btn" onclick="switchStyle('trendy', this)">신규 2 (힙 트렌디)</button>
+        <button class="tab-btn active" onclick="switchStyle('classic', this)">기존 (오리지널)</button>
+        <button class="tab-btn" onclick="switchStyle('trendy', this)">신규 (힙 트렌디)</button>
     </div>
 
-    <div id="widget-container" class="capture-area style-classic">
-        <div class="top-section">
-            <div class="profile-circle"></div>
-            <div class="info-card">
-                <div class="name">병장 신지성</div>
-                <div class="date-row">
-                    <span class="label">입대</span>
-                    <span class="date">2025.02.10</span>
+    <div class="widget-wrapper">
+        <div id="widget-classic" class="capture-area">
+            <div class="top-section">
+                <div class="profile-circle"></div>
+                <div class="info-card">
+                    <div class="name">병장 신지성</div>
+                    <div class="date-row">
+                        <span class="label">입대</span>
+                        <span class="date">2025.02.10</span>
+                    </div>
+                    <div class="date-row">
+                        <span class="label">전역</span>
+                        <span class="date">2026.10.09</span>
+                    </div>
+                    <div id="classic-time-left" class="time-left">계산 중...</div>
                 </div>
-                <div class="date-row">
-                    <span class="label">전역</span>
-                    <span class="date">2026.10.09</span>
+            </div>
+
+            <div>
+                <div class="dday-bar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                    <span id="classic-dday" style="vertical-align: middle;">D-000</span>
                 </div>
-                <div id="time-left-text" class="time-left">계산 중...</div>
+
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span>전역 ❯</span>
+                        <span>2026년 10월 09일</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="classic-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="classic-percent" class="progress-percentage">0.000000%</div>
+                </div>
             </div>
         </div>
 
-        <div>
-            <div class="dday-bar">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-                <span id="dday-text" style="vertical-align: middle;">D-000</span>
-            </div>
+        <div id="widget-trendy" class="capture-area">
+            <div class="trendy-layout">
+                
+                <div class="sticker-dday" id="trendy-dday">D-000</div>
+                <div class="sticker-star">✨</div>
+                <div class="sticker-flower">🌸</div>
 
-            <div class="progress-section">
-                <div class="progress-header">
-                    <span>전역 ❯</span>
-                    <span>2026년 10월 09일</span>
+                <div class="neo-card trendy-info-card">
+                    <div class="card-header">
+                        <div class="profile-mock">😎</div>
+                        <div>
+                            <div class="name">병장 신지성</div>
+                            <span class="badge">ROKA</span>
+                        </div>
+                    </div>
+                    <div class="dates">
+                        <div><span>입대</span>25.02.10</div>
+                        <div><span>전역</span>26.10.09</div>
+                    </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+
+                <div class="neo-card trendy-progress-card">
+                    <div class="progress-text-row">
+                        <div class="trendy-time-left" id="trendy-time-left">계산 중...</div>
+                        <div class="trendy-percentage" id="trendy-percent">0.000000%</div>
+                    </div>
+                    <div class="trendy-bar-bg">
+                        <div class="trendy-bar-fill" id="trendy-bar-fill"></div>
+                    </div>
                 </div>
-                <div id="percentage-text" class="progress-percentage">0.000000%</div>
+                
             </div>
         </div>
     </div>
 
     <div class="action-container">
-        <button class="download-btn" onclick="generateHighQualityImage()">위젯 이미지 생성하기</button>
+        <button class="download-btn" onclick="generateHighQualityImage()">📸 위젯 이미지 저장하기</button>
     </div>
 
     <div id="image-overlay" onclick="closeOverlay(event)">
         <div class="guide-text">나타난 위젯 이미지를 <b>길게 꾹 눌러서</b><br>[사진 앱에 추가/저장] 해주세요.</div>
         <img id="preview-image" src="" alt="위젯 고화질 프리뷰">
-        <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">창 닫기</button>
+        <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">닫기</button>
     </div>
 
     <script>
         const startDate = new Date('2025-02-10T00:00:00');
         const endDate = new Date('2026-10-09T00:00:00');
 
+        let currentStyle = 'classic'; // 현재 캡처할 스타일 추적
+
         function switchStyle(styleName, btnElement) {
-            const container = document.getElementById('widget-container');
+            currentStyle = styleName;
+            
+            const classicWidget = document.getElementById('widget-classic');
+            const trendyWidget = document.getElementById('widget-trendy');
             const buttons = document.querySelectorAll('.tab-btn');
             
             buttons.forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
 
             if(styleName === 'classic') {
-                container.className = "capture-area style-classic";
+                classicWidget.style.display = 'flex';
+                trendyWidget.style.display = 'none';
             } else {
-                container.className = "capture-area style-trendy";
+                classicWidget.style.display = 'none';
+                trendyWidget.style.display = 'block';
             }
         }
 
@@ -319,12 +493,21 @@
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
 
-            document.getElementById('percentage-text').innerText = percent.toFixed(6) + '%';
-            document.getElementById('progress-bar-fill').style.width = percent.toFixed(6) + '%';
+            const percentStr = percent.toFixed(6) + '%';
+            
+            // 퍼센트 및 게이지 업데이트 (두 UI 모두)
+            document.getElementById('classic-percent').innerText = percentStr;
+            document.getElementById('classic-bar-fill').style.width = percentStr;
+            document.getElementById('trendy-percent').innerText = percentStr;
+            document.getElementById('trendy-bar-fill').style.width = percentStr;
 
             const diff = endDate - now;
             const dday = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('dday-text').innerText = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
+            const ddayStr = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
+            
+            // D-day 업데이트
+            document.getElementById('classic-dday').innerText = ddayStr;
+            document.getElementById('trendy-dday').innerText = ddayStr;
 
             let monthsLeft = (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth());
             let daysLeft = endDate.getDate() - now.getDate();
@@ -335,42 +518,46 @@
                 daysLeft += prevMonthDays;
             }
             
-            document.getElementById('time-left-text').innerText = monthsLeft >= 0 ? `${monthsLeft}개월 ${daysLeft}일 남았습니다` : '고생하셨습니다!';
+            const timeLeftStr = monthsLeft >= 0 ? `${monthsLeft}개월 ${daysLeft}일 남음` : '고생하셨습니다!';
+            
+            // 남은 시간 업데이트
+            document.getElementById('classic-time-left').innerText = timeLeftStr;
+            document.getElementById('trendy-time-left').innerText = timeLeftStr;
         }
 
         calculateMilitaryData();
         setInterval(calculateMilitaryData, 300000);
 
-        // 초고화질 이미지 저장 및 에러 대응 스크립트
         function generateHighQualityImage() {
-            const container = document.getElementById('widget-container');
+            // 현재 활성화된 위젯 컨테이너 선택
+            const containerId = currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy';
+            const container = document.getElementById(containerId);
+            
             const overlay = document.getElementById('image-overlay');
             const previewImg = document.getElementById('preview-image');
             
-            // 2번 디자인일 경우 배경 제거 모드 활성화
-            const isTrendy = container.classList.contains('style-trendy');
-            if (isTrendy) {
+            // 트렌디 모드일 때 배경 패턴 투명화 클래스 추가
+            if (currentStyle === 'trendy') {
                 container.classList.add('is-capturing');
             }
             
-            // iOS 렌더링 타이밍 및 폰트 깨짐 방지 옵션 강화
             html2canvas(container, {
                 backgroundColor: null,
-                scale: 4, 
+                scale: 4, // 고화질 렌더링
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
                 fontShaping: true
             }).then(canvas => {
-                // 캡처 종료 후 스타일 원상복구
-                if (isTrendy) {
+                // 캡처 종료 후 클래스 원상복구
+                if (currentStyle === 'trendy') {
                     container.classList.remove('is-capturing');
                 }
                 
                 previewImg.src = canvas.toDataURL('image/png');
                 overlay.style.display = 'flex';
             }).catch(err => {
-                if (isTrendy) {
+                if (currentStyle === 'trendy') {
                     container.classList.remove('is-capturing');
                 }
                 console.error(err);
