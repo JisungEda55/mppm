@@ -404,7 +404,7 @@
                 <div class="progress-section">
                     <div class="progress-header">
                         <span>전역 ❯</span>
-                        <span>2026년 10월 09일</span>
+                        <span>2026년 10월 09일 07:00</span>
                     </div>
                     <div class="progress-bar-container">
                         <div id="classic-bar-fill" class="progress-bar-fill"></div>
@@ -423,10 +423,10 @@
 
                 <div class="neo-card trendy-info-card">
                     <div class="card-header">
-                        <div class="profile-mock">😎</div>
+                        <div class="profile-mock">🤩</div>
                         <div>
                             <div class="name">병장 신지성</div>
-                            <span class="badge">ROKA</span>
+                            <span class="badge">NAVY</span>
                         </div>
                     </div>
                     <div class="dates">
@@ -461,7 +461,8 @@
 
     <script>
         const startDate = new Date('2025-02-10T00:00:00');
-        const endDate = new Date('2026-10-09T00:00:00');
+        // 전역 시간을 2026년 10월 9일 오전 7시로 고정합니다.
+        const endDate = new Date('2026-10-09T07:00:00');
 
         let currentStyle = 'classic'; // 현재 캡처할 스타일 추적
 
@@ -490,6 +491,8 @@
             const total = endDate - startDate;
             const current = now - startDate;
             let percent = (current / total) * 100;
+            
+            // 퍼센트 범위 제한 (0 ~ 100)
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
 
@@ -502,13 +505,16 @@
             document.getElementById('trendy-bar-fill').style.width = percentStr;
 
             const diff = endDate - now;
-            const dday = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            
+            // 1일 덜 계산하기 위해 Math.ceil 결과에서 -1 적용
+            const dday = Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1;
             const ddayStr = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
             
             // D-day 업데이트
             document.getElementById('classic-dday').innerText = ddayStr;
             document.getElementById('trendy-dday').innerText = ddayStr;
 
+            // 남은 개월/일수 계산
             let monthsLeft = (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth());
             let daysLeft = endDate.getDate() - now.getDate();
 
@@ -518,7 +524,7 @@
                 daysLeft += prevMonthDays;
             }
             
-            const timeLeftStr = monthsLeft >= 0 ? `${monthsLeft}개월 ${daysLeft}일 남음` : '고생하셨습니다!';
+            const timeLeftStr = diff > 0 ? `${monthsLeft}개월 ${daysLeft}일 남음` : '고생하셨습니다!';
             
             // 남은 시간 업데이트
             document.getElementById('classic-time-left').innerText = timeLeftStr;
