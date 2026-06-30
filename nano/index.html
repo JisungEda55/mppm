@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Military D-Day Widget</title>
+    <title>Awesome D-Day Widget</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* LINE Seed 폰트 등록 */
@@ -126,10 +126,7 @@
             overflow: hidden;
         }
 
-        /* 캡처 시 배경 투명화 */
-        #widget-trendy.is-capturing {
-            background: transparent !important;
-        }
+        #widget-trendy.is-capturing { background: transparent !important; }
 
         .trendy-layout {
             position: relative;
@@ -138,7 +135,6 @@
             padding: 20px 10px;
         }
 
-        /* 힙한 카드 공통 스타일 (네오 브루탈리즘) */
         .neo-card {
             background: #ffffff;
             border: 2.5px solid #111827;
@@ -148,242 +144,34 @@
             position: relative;
         }
 
-        /* 상단 인포 카드 (살짝 왼쪽으로 삐뚤어지게) */
-        .trendy-info-card {
-            width: 85%;
-            transform: rotate(-3deg);
-            z-index: 2;
-            margin-left: 5%;
-        }
+        .trendy-info-card { width: 85%; transform: rotate(-3deg); z-index: 2; margin-left: 5%; }
+        .trendy-info-card .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 12px; }
+        .trendy-info-card .profile-mock { width: 48px; height: 48px; background: linear-gradient(135deg, #a7f3d0, #3b82f6); border-radius: 12px; border: 2px solid #111827; display: flex; align-items: center; justify-content: center; }
+        .fluent-emoji { width: 32px; height: 32px; object-fit: contain; }
+        .trendy-info-card .name { font-size: 20px; color: #111827; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+        .trendy-info-card .badge { background: #111827; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+        .trendy-info-card .dates { display: flex; justify-content: space-between; font-size: 12px; color: #4b5563; }
+        .trendy-info-card .dates span { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; margin-right: 6px; font-size: 10px; color: #64748b; }
 
-        .trendy-info-card .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            border-bottom: 2px dashed #e2e8f0;
-            padding-bottom: 12px;
-        }
+        .trendy-progress-card { width: 90%; transform: rotate(2deg); z-index: 3; margin-left: auto; margin-top: -15px; background: #eef2ff; }
+        .trendy-progress-card .progress-text-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .trendy-time-left { font-size: 13px; color: #111827; background: #fff; border: 1.5px solid #111827; padding: 4px 10px; border-radius: 20px; }
+        .trendy-percentage { font-size: 16px; color: #4f46e5; text-shadow: none !important; }
+        .trendy-bar-bg { width: 100%; height: 16px; background: #fff; border: 2px solid #111827; border-radius: 30px; overflow: hidden; }
+        .trendy-bar-fill { height: 100%; background: #3b82f6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px); border-right: 2px solid #111827; }
 
-        .trendy-info-card .profile-mock {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #a7f3d0, #3b82f6);
-            border-radius: 12px;
-            border: 2px solid #111827;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .sticker-dday { position: absolute; top: 10px; right: 15px; background: #a3e635; color: #111827; border: 2px solid #111827; padding: 8px 16px; border-radius: 30px; font-size: 16px; transform: rotate(10deg); z-index: 4; box-shadow: 2px 2px 0px #111827; }
+        .sticker-star { position: absolute; bottom: 15px; left: 10px; width: 36px; height: 36px; transform: rotate(-15deg); z-index: 4; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8)); }
+        .sticker-flower { position: absolute; top: 40%; left: -5px; width: 32px; height: 32px; z-index: 1; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.6)); }
 
-        /* 마이크로소프트 3D 이모지(PNG) 스타일링 */
-        .fluent-emoji {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-        }
+        .action-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .download-btn { width: 100%; padding: 16px; background-color: #111827; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .download-btn img { width: 22px; height: 22px; }
 
-        .trendy-info-card .name {
-            font-size: 20px;
-            color: #111827;
-            margin: 0 0 4px 0;
-            letter-spacing: -0.5px;
-        }
-        
-        .trendy-info-card .badge {
-            background: #111827;
-            color: #fff;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .trendy-info-card .dates {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #4b5563;
-        }
-
-        .trendy-info-card .dates span {
-            display: inline-block;
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-right: 6px;
-            font-size: 10px;
-            color: #64748b;
-        }
-
-        /* 하단 프로그레스 카드 (살짝 오른쪽으로 삐뚤어지게 겹침) */
-        .trendy-progress-card {
-            width: 90%;
-            transform: rotate(2deg);
-            z-index: 3;
-            margin-left: auto;
-            margin-top: -15px;
-            background: #eef2ff; /* 살짝 푸른빛 */
-        }
-
-        .trendy-progress-card .progress-text-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 10px;
-        }
-
-        .trendy-time-left {
-            font-size: 13px;
-            color: #111827;
-            background: #fff;
-            border: 1.5px solid #111827;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        /* 퍼센트 텍스트 그림자(text-shadow) 제거 완료 */
-        .trendy-percentage {
-            font-size: 16px;
-            color: #4f46e5;
-            text-shadow: none !important;
-        }
-
-        .trendy-bar-bg {
-            width: 100%;
-            height: 16px;
-            background: #fff;
-            border: 2px solid #111827;
-            border-radius: 30px;
-            overflow: hidden;
-        }
-
-        .trendy-bar-fill {
-            height: 100%;
-            background: #3b82f6;
-            background-image: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(255,255,255,0.2) 10px,
-                rgba(255,255,255,0.2) 20px
-            );
-            border-right: 2px solid #111827;
-        }
-
-        /* 떠다니는 스티커들 */
-        .sticker-dday {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: #a3e635; /* 네온 그린 */
-            color: #111827;
-            border: 2px solid #111827;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 16px;
-            transform: rotate(10deg);
-            z-index: 4;
-            box-shadow: 2px 2px 0px #111827;
-        }
-
-        .sticker-star {
-            position: absolute;
-            bottom: 15px;
-            left: 10px;
-            width: 36px;
-            height: 36px;
-            transform: rotate(-15deg);
-            z-index: 4;
-            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
-        }
-
-        .sticker-flower {
-            position: absolute;
-            top: 40%;
-            left: -5px;
-            width: 32px;
-            height: 32px;
-            z-index: 1;
-            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.6));
-        }
-
-        /* ==================== 공통 UI 제어부 ==================== */
-        .action-container {
-            width: 100%;
-            max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .download-btn {
-            width: 100%;
-            padding: 16px;
-            background-color: #111827;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .download-btn img {
-            width: 22px;
-            height: 22px;
-            filter: drop-shadow(1px 1px 0px rgba(255,255,255,0.3));
-        }
-
-        .download-btn:active { transform: scale(0.98); }
-
-        /* iOS 오버레이 팝업 */
-        #image-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        #image-overlay .guide-text {
-            font-size: 14px;
-            margin-bottom: 16px;
-            text-align: center;
-            line-height: 1.6;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 12px 20px;
-            border-radius: 15px;
-            color: #fff;
-        }
-
-        #image-overlay img {
-            max-width: 100%;
-            max-height: 65%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            background: transparent;
-        }
-
-        #image-overlay .close-btn {
-            margin-top: 20px;
-            padding: 12px 28px;
-            background: #fff;
-            border: none;
-            color: #000;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 15px;
-        }
+        #image-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
+        #image-overlay .guide-text { font-size: 14px; margin-bottom: 16px; text-align: center; color: #fff; }
+        #image-overlay img { max-width: 100%; max-height: 65%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        #image-overlay .close-btn { margin-top: 20px; padding: 12px 28px; background: #fff; border-radius: 30px; border: none; }
     </style>
 </head>
 <body>
@@ -399,34 +187,16 @@
                 <div class="profile-circle"></div>
                 <div class="info-card">
                     <div class="name">병장 신지성</div>
-                    <div class="date-row">
-                        <span class="label">입대</span>
-                        <span class="date">2025.02.10</span>
-                    </div>
-                    <div class="date-row">
-                        <span class="label">전역</span>
-                        <span class="date">2026.10.09</span>
-                    </div>
+                    <div class="date-row"><span class="label">입대</span><span>2025.02.10</span></div>
+                    <div class="date-row"><span class="label">전역</span><span>2026.10.09</span></div>
                     <div id="classic-time-left" class="time-left">계산 중...</div>
                 </div>
             </div>
-
             <div>
-                <div class="dday-bar">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
-                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                    </svg>
-                    <span id="classic-dday" style="vertical-align: middle;">D-000</span>
-                </div>
-
+                <div class="dday-bar">D-Day 카운트</div>
                 <div class="progress-section">
-                    <div class="progress-header">
-                        <span>전역 ❯</span>
-                        <span>2026년 10월 09일 07:00</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div id="classic-bar-fill" class="progress-bar-fill"></div>
-                    </div>
+                    <div class="progress-header"><span id="classic-dday">D-000</span></div>
+                    <div class="progress-bar-container"><div id="classic-bar-fill" class="progress-bar-fill"></div></div>
                     <div id="classic-percent" class="progress-percentage">0.000000%</div>
                 </div>
             </div>
@@ -434,55 +204,33 @@
 
         <div id="widget-trendy" class="capture-area">
             <div class="trendy-layout">
-                
                 <div class="sticker-dday" id="trendy-dday">D-000</div>
-                <!-- ✨ 반짝이 이모지 -->
                 <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Sparkles/3D/sparkles_3d.png" width="36" height="36" alt="✨" class="sticker-star" crossorigin="anonymous">
-                <!-- 🎉 폭죽 이모지 -->
                 <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Party%20popper/3D/party_popper_3d.png" width="32" height="32" alt="🎉" class="sticker-flower" crossorigin="anonymous">
-
                 <div class="neo-card trendy-info-card">
                     <div class="card-header">
-                        <div class="profile-mock">
-                            <!-- 🤩 눈이 별 모양인 이모지 -->
-                            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Star-struck/3D/star-struck_3d.png" width="32" height="32" alt="🤩" class="fluent-emoji" crossorigin="anonymous">
-                        </div>
-                        <div>
-                            <div class="name">병장 신지성</div>
-                            <span class="badge">NAVY</span>
-                        </div>
+                        <div class="profile-mock"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Star-struck/3D/star-struck_3d.png" width="32" height="32" class="fluent-emoji" crossorigin="anonymous"></div>
+                        <div><div class="name">병장 신지성</div><span class="badge">NAVY</span></div>
                     </div>
-                    <div class="dates">
-                        <div><span>입대</span>25.02.10</div>
-                        <div><span>전역</span>26.10.09</div>
-                    </div>
+                    <div class="dates"><div><span>입대</span>25.02.10</div><div><span>전역</span>26.10.09</div></div>
                 </div>
-
                 <div class="neo-card trendy-progress-card">
-                    <div class="progress-text-row">
-                        <div class="trendy-time-left" id="trendy-time-left">계산 중...</div>
-                        <div class="trendy-percentage" id="trendy-percent">0.000000%</div>
-                    </div>
-                    <div class="trendy-bar-bg">
-                        <div class="trendy-bar-fill" id="trendy-bar-fill"></div>
-                    </div>
+                    <div class="progress-text-row"><div class="trendy-time-left" id="trendy-time-left">계산 중...</div><div class="trendy-percentage" id="trendy-percent">0.000000%</div></div>
+                    <div class="trendy-bar-bg"><div class="trendy-bar-fill" id="trendy-bar-fill"></div></div>
                 </div>
-                
             </div>
         </div>
     </div>
 
     <div class="action-container">
-        <!-- 📸 카메라 이모지 -->
         <button class="download-btn" onclick="generateHighQualityImage()">
-            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Camera%20with%20flash/3D/camera_with_flash_3d.png" width="22" height="22" alt="📸" crossorigin="anonymous"> 
-            위젯 이미지 저장하기
+            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Camera%20with%20flash/3D/camera_with_flash_3d.png" alt="📸"> 위젯 이미지 저장하기
         </button>
     </div>
 
     <div id="image-overlay" onclick="closeOverlay(event)">
-        <div class="guide-text">나타난 위젯 이미지를 <b>길게 꾹 눌러서</b><br>[사진 앱에 추가/저장] 해주세요.</div>
-        <img id="preview-image" src="" alt="위젯 고화질 프리뷰">
+        <div class="guide-text">이미지를 꾹 눌러 [사진 앱에 저장]하세요.</div>
+        <img id="preview-image" src="" alt="프리뷰">
         <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">닫기</button>
     </div>
 
@@ -490,109 +238,60 @@
         const startDate = new Date('2025-02-10T00:00:00');
         const endDate = new Date('2026-10-09T07:00:00');
 
-        let currentStyle = 'classic';
-
-        function switchStyle(styleName, btnElement) {
-            currentStyle = styleName;
-            
-            const classicWidget = document.getElementById('widget-classic');
-            const trendyWidget = document.getElementById('widget-trendy');
-            const buttons = document.querySelectorAll('.tab-btn');
-            
-            buttons.forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-
-            if(styleName === 'classic') {
-                classicWidget.style.display = 'flex';
-                trendyWidget.style.display = 'none';
-            } else {
-                classicWidget.style.display = 'none';
-                trendyWidget.style.display = 'block';
-            }
-        }
-
         function calculateMilitaryData() {
             const now = new Date();
-
             const total = endDate - startDate;
             const current = now - startDate;
-            let percent = (current / total) * 100;
             
+            // 1일 빼기 로직 제거: 0%부터 100%까지 연속 계산
+            let percent = (current / total) * 100;
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
 
             const percentStr = percent.toFixed(6) + '%';
-            
             document.getElementById('classic-percent').innerText = percentStr;
             document.getElementById('classic-bar-fill').style.width = percentStr;
             document.getElementById('trendy-percent').innerText = percentStr;
             document.getElementById('trendy-bar-fill').style.width = percentStr;
 
+            // 남은 시간(밀리초) 계산 후 D-day 텍스트 변환
             const diff = endDate - now;
-            
-            const dday = Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1;
-            const ddayStr = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
+            const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const ddayStr = diff > 0 ? `D-${remainingDays}` : '전역 완료';
             
             document.getElementById('classic-dday').innerText = ddayStr;
             document.getElementById('trendy-dday').innerText = ddayStr;
 
-            let monthsLeft = (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth());
-            let daysLeft = endDate.getDate() - now.getDate();
-
-            if (daysLeft < 0) {
-                const prevMonthDays = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
-                monthsLeft -= 1;
-                daysLeft += prevMonthDays;
-            }
-            
-            const timeLeftStr = diff > 0 ? `${monthsLeft}개월 ${daysLeft}일 남음` : '고생하셨습니다!';
-            
-            document.getElementById('classic-time-left').innerText = timeLeftStr;
-            document.getElementById('trendy-time-left').innerText = timeLeftStr;
+            // 남은 시간 표시
+            const totalSeconds = Math.floor(diff / 1000);
+            const months = Math.floor(totalSeconds / (30 * 24 * 3600));
+            const days = Math.floor((totalSeconds % (30 * 24 * 3600)) / (24 * 3600));
+            document.getElementById('classic-time-left').innerText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
+            document.getElementById('trendy-time-left').innerText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
         }
 
         calculateMilitaryData();
-        setInterval(calculateMilitaryData, 300000);
+        setInterval(calculateMilitaryData, 60000); // 1분마다 갱신
+
+        let currentStyle = 'classic';
+        function switchStyle(styleName, btn) {
+            currentStyle = styleName;
+            document.getElementById('widget-classic').style.display = styleName === 'classic' ? 'flex' : 'none';
+            document.getElementById('widget-trendy').style.display = styleName === 'trendy' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
 
         function generateHighQualityImage() {
-            const containerId = currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy';
-            const container = document.getElementById(containerId);
-            
-            const overlay = document.getElementById('image-overlay');
-            const previewImg = document.getElementById('preview-image');
-            
-            if (currentStyle === 'trendy') {
-                container.classList.add('is-capturing');
-            }
-            
-            html2canvas(container, {
-                backgroundColor: null,
-                scale: 4,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                fontShaping: true
-            }).then(canvas => {
-                if (currentStyle === 'trendy') {
-                    container.classList.remove('is-capturing');
-                }
-                
-                previewImg.src = canvas.toDataURL('image/png');
-                overlay.style.display = 'flex';
-            }).catch(err => {
-                if (currentStyle === 'trendy') {
-                    container.classList.remove('is-capturing');
-                }
-                console.error(err);
-                alert('이미지 생성 오류가 발생했습니다. 다시 시도해주세요.');
+            const container = document.getElementById(currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy');
+            if(currentStyle === 'trendy') container.classList.add('is-capturing');
+            html2canvas(container, { scale: 4, useCORS: true }).then(canvas => {
+                if(currentStyle === 'trendy') container.classList.remove('is-capturing');
+                document.getElementById('preview-image').src = canvas.toDataURL('image/png');
+                document.getElementById('image-overlay').style.display = 'flex';
             });
         }
-
-        function closeOverlay(event) {
-            if(event.target.id === 'image-overlay') {
-                document.getElementById('image-overlay').style.display = 'none';
-            }
-        }
+        function closeOverlay(e) { if(e.target.id === 'image-overlay') document.getElementById('image-overlay').style.display = 'none'; }
     </script>
 </body>
 </html>
