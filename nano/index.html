@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Awesome D-Day Widget</title>
+    <title>Military D-Day Widget</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* LINE Seed 폰트 등록 */
         @font-face {
             font-family: 'LineSeed';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
@@ -126,7 +125,11 @@
             overflow: hidden;
         }
 
-        #widget-trendy.is-capturing { background: transparent !important; }
+        /* 캡처 시 배경 색상 및 패턴 이미지 완전 제거 */
+        #widget-trendy.is-capturing { 
+            background: none !important; 
+            background-color: transparent !important; 
+        }
 
         .trendy-layout {
             position: relative;
@@ -243,7 +246,6 @@
             const total = endDate - startDate;
             const current = now - startDate;
             
-            // 1일 빼기 로직 제거: 0%부터 100%까지 연속 계산
             let percent = (current / total) * 100;
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
@@ -254,7 +256,6 @@
             document.getElementById('trendy-percent').innerText = percentStr;
             document.getElementById('trendy-bar-fill').style.width = percentStr;
 
-            // 남은 시간(밀리초) 계산 후 D-day 텍스트 변환
             const diff = endDate - now;
             const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
             const ddayStr = diff > 0 ? `D-${remainingDays}` : '전역 완료';
@@ -262,7 +263,6 @@
             document.getElementById('classic-dday').innerText = ddayStr;
             document.getElementById('trendy-dday').innerText = ddayStr;
 
-            // 남은 시간 표시
             const totalSeconds = Math.floor(diff / 1000);
             const months = Math.floor(totalSeconds / (30 * 24 * 3600));
             const days = Math.floor((totalSeconds % (30 * 24 * 3600)) / (24 * 3600));
@@ -271,7 +271,7 @@
         }
 
         calculateMilitaryData();
-        setInterval(calculateMilitaryData, 60000); // 1분마다 갱신
+        setInterval(calculateMilitaryData, 60000);
 
         let currentStyle = 'classic';
         function switchStyle(styleName, btn) {
@@ -284,8 +284,18 @@
 
         function generateHighQualityImage() {
             const container = document.getElementById(currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy');
-            if(currentStyle === 'trendy') container.classList.add('is-capturing');
-            html2canvas(container, { scale: 4, useCORS: true }).then(canvas => {
+            
+            const options = { 
+                scale: 4, 
+                useCORS: true 
+            };
+            
+            if(currentStyle === 'trendy') {
+                container.classList.add('is-capturing');
+                options.backgroundColor = null; // 배경 투명화 활성화
+            }
+
+            html2canvas(container, options).then(canvas => {
                 if(currentStyle === 'trendy') container.classList.remove('is-capturing');
                 document.getElementById('preview-image').src = canvas.toDataURL('image/png');
                 document.getElementById('image-overlay').style.display = 'flex';
