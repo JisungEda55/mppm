@@ -174,7 +174,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+        }
+
+        /* 마이크로소프트 3D 이모지(PNG) 스타일링 */
+        .fluent-emoji {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
         }
 
         .trendy-info-card .name {
@@ -236,10 +242,11 @@
             border-radius: 20px;
         }
 
+        /* 퍼센트 텍스트 그림자(text-shadow) 제거 완료 */
         .trendy-percentage {
             font-size: 16px;
             color: #4f46e5;
-            text-shadow: 1px 1px 0px #111827;
+            text-shadow: none !important;
         }
 
         .trendy-bar-bg {
@@ -284,20 +291,21 @@
             position: absolute;
             bottom: 15px;
             left: 10px;
-            font-size: 24px;
+            width: 36px;
+            height: 36px;
             transform: rotate(-15deg);
             z-index: 4;
-            color: #fbbf24;
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
         }
 
         .sticker-flower {
             position: absolute;
             top: 40%;
             left: -5px;
-            font-size: 20px;
+            width: 32px;
+            height: 32px;
             z-index: 1;
-            filter: drop-shadow(1px 1px 0px #000);
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.6));
         }
 
         /* ==================== 공통 UI 제어부 ==================== */
@@ -321,6 +329,16 @@
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-btn img {
+            width: 22px;
+            height: 22px;
+            filter: drop-shadow(1px 1px 0px rgba(255,255,255,0.3));
         }
 
         .download-btn:active { transform: scale(0.98); }
@@ -418,12 +436,17 @@
             <div class="trendy-layout">
                 
                 <div class="sticker-dday" id="trendy-dday">D-000</div>
-                <div class="sticker-star">✨</div>
-                <div class="sticker-flower">🌸</div>
+                <!-- ✨ 반짝이 이모지 -->
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Sparkles/3D/sparkles_3d.png" width="36" height="36" alt="✨" class="sticker-star" crossorigin="anonymous">
+                <!-- 🎉 폭죽 이모지 -->
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Party%20popper/3D/party_popper_3d.png" width="32" height="32" alt="🎉" class="sticker-flower" crossorigin="anonymous">
 
                 <div class="neo-card trendy-info-card">
                     <div class="card-header">
-                        <div class="profile-mock">🤩</div>
+                        <div class="profile-mock">
+                            <!-- 🤩 눈이 별 모양인 이모지 -->
+                            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Star-struck/3D/star-struck_3d.png" width="32" height="32" alt="🤩" class="fluent-emoji" crossorigin="anonymous">
+                        </div>
                         <div>
                             <div class="name">병장 신지성</div>
                             <span class="badge">NAVY</span>
@@ -450,7 +473,11 @@
     </div>
 
     <div class="action-container">
-        <button class="download-btn" onclick="generateHighQualityImage()">📸 위젯 이미지 저장하기</button>
+        <!-- 📸 카메라 이모지 -->
+        <button class="download-btn" onclick="generateHighQualityImage()">
+            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Camera%20with%20flash/3D/camera_with_flash_3d.png" width="22" height="22" alt="📸" crossorigin="anonymous"> 
+            위젯 이미지 저장하기
+        </button>
     </div>
 
     <div id="image-overlay" onclick="closeOverlay(event)">
@@ -461,10 +488,9 @@
 
     <script>
         const startDate = new Date('2025-02-10T00:00:00');
-        // 전역 시간을 2026년 10월 9일 오전 7시로 고정합니다.
         const endDate = new Date('2026-10-09T07:00:00');
 
-        let currentStyle = 'classic'; // 현재 캡처할 스타일 추적
+        let currentStyle = 'classic';
 
         function switchStyle(styleName, btnElement) {
             currentStyle = styleName;
@@ -492,13 +518,11 @@
             const current = now - startDate;
             let percent = (current / total) * 100;
             
-            // 퍼센트 범위 제한 (0 ~ 100)
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
 
             const percentStr = percent.toFixed(6) + '%';
             
-            // 퍼센트 및 게이지 업데이트 (두 UI 모두)
             document.getElementById('classic-percent').innerText = percentStr;
             document.getElementById('classic-bar-fill').style.width = percentStr;
             document.getElementById('trendy-percent').innerText = percentStr;
@@ -506,15 +530,12 @@
 
             const diff = endDate - now;
             
-            // 1일 덜 계산하기 위해 Math.ceil 결과에서 -1 적용
             const dday = Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1;
             const ddayStr = dday > 0 ? 'D-' + dday : (dday === 0 ? 'D-Day' : '전역 완료');
             
-            // D-day 업데이트
             document.getElementById('classic-dday').innerText = ddayStr;
             document.getElementById('trendy-dday').innerText = ddayStr;
 
-            // 남은 개월/일수 계산
             let monthsLeft = (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth());
             let daysLeft = endDate.getDate() - now.getDate();
 
@@ -526,7 +547,6 @@
             
             const timeLeftStr = diff > 0 ? `${monthsLeft}개월 ${daysLeft}일 남음` : '고생하셨습니다!';
             
-            // 남은 시간 업데이트
             document.getElementById('classic-time-left').innerText = timeLeftStr;
             document.getElementById('trendy-time-left').innerText = timeLeftStr;
         }
@@ -535,27 +555,24 @@
         setInterval(calculateMilitaryData, 300000);
 
         function generateHighQualityImage() {
-            // 현재 활성화된 위젯 컨테이너 선택
             const containerId = currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy';
             const container = document.getElementById(containerId);
             
             const overlay = document.getElementById('image-overlay');
             const previewImg = document.getElementById('preview-image');
             
-            // 트렌디 모드일 때 배경 패턴 투명화 클래스 추가
             if (currentStyle === 'trendy') {
                 container.classList.add('is-capturing');
             }
             
             html2canvas(container, {
                 backgroundColor: null,
-                scale: 4, // 고화질 렌더링
+                scale: 4,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
                 fontShaping: true
             }).then(canvas => {
-                // 캡처 종료 후 클래스 원상복구
                 if (currentStyle === 'trendy') {
                     container.classList.remove('is-capturing');
                 }
