@@ -30,7 +30,6 @@
             min-height: 100vh;
         }
 
-        /* 스타일 선택 탭 스타일 */
         .tab-menu {
             display: flex;
             background: #e2e8f0;
@@ -67,7 +66,6 @@
             position: relative;
         }
 
-        /* 모바일 대응 컨테이너 공통 */
         .capture-area {
             width: 100%;
             padding: 10px;
@@ -111,21 +109,37 @@
         #widget-classic .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
         #widget-classic .progress-bar-container { width: 100%; height: 10px; background-color: rgba(255, 255, 255, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
         #widget-classic .progress-bar-fill { height: 100%; background-color: #0d369c; }
-        #widget-classic .progress-percentage { text-align: right; font-size: 12px; color: rgba(255, 255, 255, 0.9); }
+        
+        /* 🔽 복무일자 형식을 "561 / 606"로 변경 */
+        #widget-classic .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 4px;
+        }
+        #widget-classic .served-days {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 0.5px;
+        }
+        #widget-classic .progress-percentage {
+            text-align: right;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
 
         /* ==================== [스타일 2: 트렌디 힙 스타일] ==================== */
         #widget-trendy {
             position: relative;
             min-height: 280px;
-            display: none; /* 기본은 숨김 */
-            background: #f4f6fa; /* 프리뷰용 배경 */
+            display: none;
+            background: #f4f6fa;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 16px 16px;
             border-radius: 24px;
             overflow: hidden;
         }
 
-        /* 캡처 시 배경 색상 및 패턴 이미지 완전 제거 */
         #widget-trendy.is-capturing { 
             background: none !important; 
             background-color: transparent !important; 
@@ -157,9 +171,27 @@
         .trendy-info-card .dates span { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; margin-right: 6px; font-size: 10px; color: #64748b; }
 
         .trendy-progress-card { width: 90%; transform: rotate(2deg); z-index: 3; margin-left: auto; margin-top: -15px; background: #eef2ff; }
-        .trendy-progress-card .progress-text-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .trendy-progress-card .progress-text-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .trendy-time-left { font-size: 13px; color: #111827; background: #fff; border: 1.5px solid #111827; padding: 4px 10px; border-radius: 20px; }
-        .trendy-percentage { font-size: 16px; color: #4f46e5; text-shadow: none !important; }
+        
+        /* 🔽 복무일자 형식을 "561 / 606"로 변경 (트렌디) */
+        .trendy-right-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.3;
+        }
+        .trendy-served-days {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .trendy-percentage { 
+            font-size: 16px; 
+            color: #4f46e5; 
+            text-shadow: none !important; 
+        }
+
         .trendy-bar-bg { width: 100%; height: 16px; background: #fff; border: 2px solid #111827; border-radius: 30px; overflow: hidden; }
         .trendy-bar-fill { height: 100%; background: #3b82f6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px); border-right: 2px solid #111827; }
 
@@ -185,6 +217,7 @@
     </div>
 
     <div class="widget-wrapper">
+        <!-- ===== 클래식 위젯 ===== -->
         <div id="widget-classic" class="capture-area">
             <div class="top-section">
                 <div class="profile-circle"></div>
@@ -198,13 +231,22 @@
             <div>
                 <div class="dday-bar">D-Day 카운트</div>
                 <div class="progress-section">
-                    <div class="progress-header"><span id="classic-dday">D-000</span></div>
-                    <div class="progress-bar-container"><div id="classic-bar-fill" class="progress-bar-fill"></div></div>
-                    <div id="classic-percent" class="progress-percentage">0.000000%</div>
+                    <div class="progress-header">
+                        <span id="classic-dday">D-000</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div id="classic-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <!-- 🔽 수정: "561 / 606" 형식으로 표시 -->
+                    <div class="progress-stats">
+                        <span id="classic-served-days" class="served-days">0 / 0</span>
+                        <span id="classic-percent" class="progress-percentage">0.000000%</span>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- ===== 트렌디 위젯 ===== -->
         <div id="widget-trendy" class="capture-area">
             <div class="trendy-layout">
                 <div class="sticker-dday" id="trendy-dday">D-000</div>
@@ -218,8 +260,17 @@
                     <div class="dates"><div><span>입대</span>25.02.10</div><div><span>전역</span>26.10.09</div></div>
                 </div>
                 <div class="neo-card trendy-progress-card">
-                    <div class="progress-text-row"><div class="trendy-time-left" id="trendy-time-left">계산 중...</div><div class="trendy-percentage" id="trendy-percent">0.000000%</div></div>
-                    <div class="trendy-bar-bg"><div class="trendy-bar-fill" id="trendy-bar-fill"></div></div>
+                    <div class="progress-text-row">
+                        <div class="trendy-time-left" id="trendy-time-left">계산 중...</div>
+                        <!-- 🔽 수정: "561 / 606" 형식으로 표시 -->
+                        <div class="trendy-right-stats">
+                            <span class="trendy-served-days" id="trendy-served-days">0 / 0</span>
+                            <span class="trendy-percentage" id="trendy-percent">0.000000%</span>
+                        </div>
+                    </div>
+                    <div class="trendy-bar-bg">
+                        <div class="trendy-bar-fill" id="trendy-bar-fill"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -241,21 +292,35 @@
         const startDate = new Date('2025-02-10T00:00:00');
         const endDate = new Date('2026-10-09T07:00:00');
 
+        // 전체 복무일수 (606일)
+        const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+
         function calculateMilitaryData() {
             const now = new Date();
             const total = endDate - startDate;
             const current = now - startDate;
             
+            // 진행률 계산
             let percent = (current / total) * 100;
             if(percent < 0) percent = 0;
             if(percent > 100) percent = 100;
-
             const percentStr = percent.toFixed(6) + '%';
+            
+            // 🔽 복무 일수 계산 (입대일을 1일차로 포함 = +1)
+            const servedDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            const servedText = `${servedDays} / ${totalDays}`;
+
+            // 클래식 업데이트
             document.getElementById('classic-percent').innerText = percentStr;
             document.getElementById('classic-bar-fill').style.width = percentStr;
+            document.getElementById('classic-served-days').innerText = servedText;
+
+            // 트렌디 업데이트
             document.getElementById('trendy-percent').innerText = percentStr;
             document.getElementById('trendy-bar-fill').style.width = percentStr;
+            document.getElementById('trendy-served-days').innerText = servedText;
 
+            // D-Day 및 남은 시간
             const diff = endDate - now;
             const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
             const ddayStr = diff > 0 ? `D-${remainingDays}` : '전역 완료';
@@ -266,8 +331,9 @@
             const totalSeconds = Math.floor(diff / 1000);
             const months = Math.floor(totalSeconds / (30 * 24 * 3600));
             const days = Math.floor((totalSeconds % (30 * 24 * 3600)) / (24 * 3600));
-            document.getElementById('classic-time-left').innerText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
-            document.getElementById('trendy-time-left').innerText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
+            const timeLeftText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
+            document.getElementById('classic-time-left').innerText = timeLeftText;
+            document.getElementById('trendy-time-left').innerText = timeLeftText;
         }
 
         calculateMilitaryData();
@@ -284,17 +350,11 @@
 
         function generateHighQualityImage() {
             const container = document.getElementById(currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy');
-            
-            const options = { 
-                scale: 4, 
-                useCORS: true 
-            };
-            
+            const options = { scale: 4, useCORS: true };
             if(currentStyle === 'trendy') {
                 container.classList.add('is-capturing');
-                options.backgroundColor = null; // 배경 투명화 활성화
+                options.backgroundColor = null;
             }
-
             html2canvas(container, options).then(canvas => {
                 if(currentStyle === 'trendy') container.classList.remove('is-capturing');
                 document.getElementById('preview-image').src = canvas.toDataURL('image/png');
