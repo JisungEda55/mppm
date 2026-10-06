@@ -74,9 +74,7 @@
             background: transparent;
         }
 
-        /* =========================================================
-           스타일 1 : 오리지널
-        ========================================================= */
+        /* ==================== [스타일 1: 오리지널 순정] ==================== */
 
         #widget-classic {
             display: flex;
@@ -167,8 +165,6 @@
         #widget-classic .progress-bar-fill {
             height: 100%;
             background-color: #0d369c;
-            width: 0%;
-            transition: width 0.3s ease;
         }
 
         #widget-classic .progress-stats {
@@ -191,9 +187,7 @@
         }
 
 
-        /* =========================================================
-           스타일 2 : 트렌디 힙
-        ========================================================= */
+        /* ==================== [스타일 2: 트렌디 힙 스타일] ==================== */
 
         #widget-trendy {
             position: relative;
@@ -348,7 +342,6 @@
 
         .trendy-bar-fill {
             height: 100%;
-            width: 0%;
             background: #3b82f6;
             background-image: repeating-linear-gradient(
                 45deg,
@@ -358,7 +351,6 @@
                 rgba(255,255,255,0.2) 20px
             );
             border-right: 2px solid #111827;
-            transition: width 0.3s ease;
         }
 
         .sticker-dday {
@@ -398,9 +390,7 @@
         }
 
 
-        /* =========================================================
-           버튼 / 이미지 저장
-        ========================================================= */
+        /* ==================== [저장 버튼] ==================== */
 
         .action-container {
             width: 100%;
@@ -430,6 +420,9 @@
             width: 22px;
             height: 22px;
         }
+
+
+        /* ==================== [이미지 미리보기] ==================== */
 
         #image-overlay {
             display: none;
@@ -472,11 +465,10 @@
 
 <body>
 
-    <!-- =========================================================
-         스타일 선택
-    ========================================================= -->
+    <!-- ==================== 탭 ==================== -->
 
     <div class="tab-menu">
+
         <button
             class="tab-btn active"
             onclick="switchStyle('classic', this)">
@@ -488,14 +480,13 @@
             onclick="switchStyle('trendy', this)">
             신규 (힙 트렌디)
         </button>
+
     </div>
 
 
     <div class="widget-wrapper">
 
-        <!-- =====================================================
-             클래식 위젯
-        ====================================================== -->
+        <!-- ==================== 클래식 위젯 ==================== -->
 
         <div id="widget-classic" class="capture-area">
 
@@ -526,6 +517,7 @@
                     </div>
 
                 </div>
+
             </div>
 
 
@@ -544,10 +536,12 @@
                     </div>
 
                     <div class="progress-bar-container">
+
                         <div
                             id="classic-bar-fill"
                             class="progress-bar-fill">
                         </div>
+
                     </div>
 
                     <div class="progress-stats">
@@ -555,7 +549,7 @@
                         <span
                             id="classic-served-days"
                             class="served-days">
-                            0 / 607
+                            0 / 606
                         </span>
 
                         <span
@@ -573,9 +567,7 @@
         </div>
 
 
-        <!-- =====================================================
-             트렌디 위젯
-        ====================================================== -->
+        <!-- ==================== 트렌디 위젯 ==================== -->
 
         <div id="widget-trendy" class="capture-area">
 
@@ -671,7 +663,7 @@
                             <span
                                 class="trendy-served-days"
                                 id="trendy-served-days">
-                                0 / 607
+                                0 / 606
                             </span>
 
                             <span
@@ -703,9 +695,7 @@
     </div>
 
 
-    <!-- =========================================================
-         이미지 저장 버튼
-    ========================================================= -->
+    <!-- ==================== 이미지 저장 ==================== -->
 
     <div class="action-container">
 
@@ -725,9 +715,7 @@
     </div>
 
 
-    <!-- =========================================================
-         이미지 미리보기
-    ========================================================= -->
+    <!-- ==================== 이미지 오버레이 ==================== -->
 
     <div
         id="image-overlay"
@@ -746,9 +734,7 @@
         <button
             class="close-btn"
             onclick="document.getElementById('image-overlay').style.display='none';">
-
             닫기
-
         </button>
 
     </div>
@@ -756,62 +742,71 @@
 
     <script>
 
-        /* ========================================================
-           복무 기준
-        ======================================================== */
+        /* =========================================================
+           복무 날짜 설정
+        ========================================================= */
 
-        // 입대
+        // 입대일
         const startDate = new Date(
             '2025-02-10T00:00:00+09:00'
         );
 
-        // 전역
+        // 전역일 및 전역 시각
         const endDate = new Date(
             '2026-10-09T07:00:00+09:00'
         );
 
+        // 기존 기준 유지
+        const totalDays = 606;
 
-        /*
-         * 날짜 기준 총 복무일
-         *
-         * 2025-02-10 = 1일차
-         * 2026-10-09 = 607일차
-         */
-        const totalServiceDays = 607;
+        // 하루
+        const DAY_MS =
+            1000 * 60 * 60 * 24;
 
 
-        /* 하루 밀리초 */
-        const DAY_MS = 24 * 60 * 60 * 1000;
+        /* =========================================================
+           날짜만 추출
+           
+           시간/분/초를 제거해서
+           "오늘 날짜"와 "전역 날짜"를 비교하기 위한 함수
+        ========================================================= */
+
+        function getCalendarDate(date) {
+
+            return new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate()
+            );
+
+        }
 
 
-        /* ========================================================
+        /* =========================================================
            군 복무 데이터 계산
-        ======================================================== */
+        ========================================================= */
 
         function calculateMilitaryData() {
 
             const now = new Date();
 
 
-            /* ----------------------------------------------------
-               1. 전체 기간 및 현재 진행 시간
-            ---------------------------------------------------- */
+            /* =====================================================
+               1. 전체 복무시간 기준 진행률
+            ===================================================== */
 
-            const totalDuration =
+            const total =
                 endDate.getTime() -
                 startDate.getTime();
 
-            const elapsed =
+            const current =
                 now.getTime() -
                 startDate.getTime();
 
 
-            /* ----------------------------------------------------
-               2. 진행률
-            ---------------------------------------------------- */
-
             let percent =
-                (elapsed / totalDuration) * 100;
+                (current / total) * 100;
+
 
             if (percent < 0) {
                 percent = 0;
@@ -826,19 +821,14 @@
                 percent.toFixed(6) + '%';
 
 
-            /* ----------------------------------------------------
-               3. 복무일수
-               
-               날짜 자체를 기준으로 계산합니다.
+            /* =====================================================
+               2. 복무일자
 
-               2025-02-10 → 1일차
-               2025-02-11 → 2일차
-               ...
-               2026-10-09 → 607일차
+               총 복무일수는 기존대로 606일.
 
-               전역 시각인 07:00을 지나면
-               전역 완료 상태입니다.
-            ---------------------------------------------------- */
+               여기서는 "실제 24시간 경과일" 기준을 유지하고
+               입대일을 1일차로 포함합니다.
+            ===================================================== */
 
             let servedDays;
 
@@ -849,99 +839,76 @@
 
             } else if (now >= endDate) {
 
-                servedDays = totalServiceDays;
+                servedDays = totalDays;
 
             } else {
 
-                /*
-                 * 시간 부분을 제거하고
-                 * 한국 달력 날짜만 비교합니다.
-                 */
-
-                const startCalendar =
-                    new Date(
-                        startDate.getFullYear(),
-                        startDate.getMonth(),
-                        startDate.getDate()
-                    );
-
-                const nowCalendar =
-                    new Date(
-                        now.getFullYear(),
-                        now.getMonth(),
-                        now.getDate()
-                    );
-
-
-                const calendarDifference =
+                servedDays =
                     Math.floor(
                         (
-                            nowCalendar.getTime() -
-                            startCalendar.getTime()
+                            now.getTime() -
+                            startDate.getTime()
                         ) / DAY_MS
-                    );
+                    ) + 1;
 
 
-                /*
-                 * 입대일을 1일차로 포함
-                 */
-                servedDays =
-                    calendarDifference + 1;
-
-
-                /*
-                 * 안전 범위
-                 */
-                if (servedDays < 1) {
-                    servedDays = 1;
-                }
-
-                if (servedDays > totalServiceDays) {
-                    servedDays = totalServiceDays;
+                if (servedDays > totalDays) {
+                    servedDays = totalDays;
                 }
 
             }
 
 
             const servedText =
-                `${servedDays} / ${totalServiceDays}`;
+                `${servedDays} / ${totalDays}`;
 
 
-            /* ====================================================
-               4. 화면 업데이트
-            ==================================================== */
+            /* =====================================================
+               3. 클래식 위젯 업데이트
+            ===================================================== */
 
-            // 클래식
             document.getElementById(
                 'classic-percent'
-            ).innerText = percentStr;
+            ).innerText =
+                percentStr;
 
             document.getElementById(
                 'classic-bar-fill'
-            ).style.width = percentStr;
+            ).style.width =
+                percentStr;
 
             document.getElementById(
                 'classic-served-days'
-            ).innerText = servedText;
+            ).innerText =
+                servedText;
 
 
-            // 트렌디
+            /* =====================================================
+               4. 트렌디 위젯 업데이트
+            ===================================================== */
+
             document.getElementById(
                 'trendy-percent'
-            ).innerText = percentStr;
+            ).innerText =
+                percentStr;
 
             document.getElementById(
                 'trendy-bar-fill'
-            ).style.width = percentStr;
+            ).style.width =
+                percentStr;
 
             document.getElementById(
                 'trendy-served-days'
-            ).innerText = servedText;
+            ).innerText =
+                servedText;
 
 
-            /* ====================================================
+            /* =====================================================
                5. D-Day
-            ==================================================== */
+
+               전역까지 남은 "완전한 24시간"을 기준으로
+               기존 D-Day 계산을 유지합니다.
+            ===================================================== */
 
             const diff =
                 endDate.getTime() -
@@ -953,16 +920,15 @@
 
             if (diff <= 0) {
 
-                ddayStr = '전역 완료';
+                ddayStr =
+                    '전역 완료';
 
             } else {
 
-                /*
-                 * 남은 날짜는 24시간 단위의
-                 * 완전한 일수로 표시
-                 */
                 const remainingDays =
-                    Math.floor(diff / DAY_MS);
+                    Math.floor(
+                        diff / DAY_MS
+                    );
 
                 ddayStr =
                     `D-${remainingDays}`;
@@ -972,80 +938,123 @@
 
             document.getElementById(
                 'classic-dday'
-            ).innerText = ddayStr;
+            ).innerText =
+                ddayStr;
 
             document.getElementById(
                 'trendy-dday'
-            ).innerText = ddayStr;
+            ).innerText =
+                ddayStr;
 
 
-            /* ====================================================
-               6. 남은 시간
-            ==================================================== */
+            /* =====================================================
+               6. "개월 / 일 남음"
+
+               ★ 이번 수정의 핵심 ★
+
+               기존:
+               실제 남은 시간을 30일 단위로 나눈 뒤
+               Math.floor() 했기 때문에
+
+               10/06 → 10/09 07:00
+               = 2일 11시간
+               = 0개월 2일
+
+               로 표시됨.
+
+               수정:
+               "오늘 날짜"와 "전역 날짜"의
+               달력상 차이를 계산합니다.
+
+               10/06 → 10/09
+               = 3일
+
+               따라서:
+               0개월 3일 남음
+            ===================================================== */
+
+            let timeLeftText;
+
 
             if (diff <= 0) {
 
-                document.getElementById(
-                    'classic-time-left'
-                ).innerText =
-                    '고생하셨습니다!';
-
-                document.getElementById(
-                    'trendy-time-left'
-                ).innerText =
+                timeLeftText =
                     '고생하셨습니다!';
 
             } else {
 
-                const totalSeconds =
-                    Math.floor(diff / 1000);
+                const today =
+                    getCalendarDate(now);
+
+                const dischargeDay =
+                    getCalendarDate(endDate);
 
 
                 /*
-                 * 기존 디자인을 유지하여
-                 * 30일 = 1개월로 표시
+                 * 전역 날짜 - 오늘 날짜
+                 *
+                 * 시간은 모두 00:00으로 맞춰져 있으므로
+                 * 순수하게 달력 날짜 차이만 계산합니다.
                  */
-                const months =
-                    Math.floor(
-                        totalSeconds /
-                        (30 * 24 * 60 * 60)
-                    );
 
-
-                const days =
+                const calendarDiff =
                     Math.floor(
                         (
-                            totalSeconds %
-                            (30 * 24 * 60 * 60)
-                        ) /
-                        (24 * 60 * 60)
+                            dischargeDay.getTime() -
+                            today.getTime()
+                        ) / DAY_MS
                     );
 
 
-                const timeLeftText =
+                /*
+                 * 기존 UI의 "개월 / 일" 형식을 유지.
+                 *
+                 * 여기서는 기존 코드와 동일하게
+                 * 30일 = 1개월 기준을 사용합니다.
+                 */
+
+                const months =
+                    Math.floor(
+                        calendarDiff / 30
+                    );
+
+                const days =
+                    calendarDiff % 30;
+
+
+                timeLeftText =
                     `${months}개월 ${days}일 남음`;
 
-
-                document.getElementById(
-                    'classic-time-left'
-                ).innerText =
-                    timeLeftText;
-
-                document.getElementById(
-                    'trendy-time-left'
-                ).innerText =
-                    timeLeftText;
-
             }
+
+
+            /* =====================================================
+               7. 남은 시간 텍스트 적용
+            ===================================================== */
+
+            document.getElementById(
+                'classic-time-left'
+            ).innerText =
+                timeLeftText;
+
+            document.getElementById(
+                'trendy-time-left'
+            ).innerText =
+                timeLeftText;
 
         }
 
 
-        /* ========================================================
-           최초 실행 + 1분마다 갱신
-        ======================================================== */
+        /* =========================================================
+           최초 실행
+        ========================================================= */
 
         calculateMilitaryData();
+
+
+        /* =========================================================
+           1분마다 갱신
+        ========================================================= */
 
         setInterval(
             calculateMilitaryData,
@@ -1053,16 +1062,21 @@
         );
 
 
-        /* ========================================================
+        /* =========================================================
            스타일 전환
-        ======================================================== */
+        ========================================================= */
 
-        let currentStyle = 'classic';
+        let currentStyle =
+            'classic';
 
 
-        function switchStyle(styleName, btn) {
+        function switchStyle(
+            styleName,
+            btn
+        ) {
 
-            currentStyle = styleName;
+            currentStyle =
+                styleName;
 
 
             document.getElementById(
@@ -1084,19 +1098,24 @@
             document
                 .querySelectorAll('.tab-btn')
                 .forEach(
-                    button =>
-                        button.classList.remove('active')
+                    button => {
+                        button.classList.remove(
+                            'active'
+                        );
+                    }
                 );
 
 
-            btn.classList.add('active');
+            btn.classList.add(
+                'active'
+            );
 
         }
 
 
-        /* ========================================================
+        /* =========================================================
            고화질 이미지 생성
-        ======================================================== */
+        ========================================================= */
 
         async function generateHighQualityImage() {
 
@@ -1114,13 +1133,17 @@
             };
 
 
-            if (currentStyle === 'trendy') {
+            if (
+                currentStyle ===
+                'trendy'
+            ) {
 
                 container.classList.add(
                     'is-capturing'
                 );
 
-                options.backgroundColor = null;
+                options.backgroundColor =
+                    null;
 
             }
 
@@ -1161,7 +1184,10 @@
 
             } finally {
 
-                if (currentStyle === 'trendy') {
+                if (
+                    currentStyle ===
+                    'trendy'
+                ) {
 
                     container.classList.remove(
                         'is-capturing'
@@ -1174,9 +1200,9 @@
         }
 
 
-        /* ========================================================
+        /* =========================================================
            오버레이 닫기
-        ======================================================== */
+        ========================================================= */
 
         function closeOverlay(event) {
 
