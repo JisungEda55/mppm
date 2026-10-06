@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>nano D-Day Widget</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         @font-face {
             font-family: 'LineSeed';
@@ -72,7 +74,10 @@
             background: transparent;
         }
 
-        /* ==================== [스타일 1: 오리지널 순정] ==================== */
+        /* =========================================================
+           스타일 1 : 오리지널
+        ========================================================= */
+
         #widget-classic {
             display: flex;
             flex-direction: column;
@@ -100,35 +105,96 @@
             width: calc(100% - 115px);
         }
 
-        #widget-classic .name { font-size: 18px; margin-bottom: 8px; color: #000; }
-        #widget-classic .date-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
-        #widget-classic .date-row .label { color: #888888; }
-        #widget-classic .time-left { font-size: 12px; text-align: center; margin-top: 8px; color: #333333; }
-        #widget-classic .dday-bar { background-color: #2b56c6; color: #ffffff; padding: 10px 14px; border-radius: 8px 8px 0 0; font-size: 14px; display: flex; align-items: center; gap: 6px; }
-        #widget-classic .progress-section { background-color: #5393ff; color: #ffffff; padding: 16px; border-radius: 0 0 8px 8px; margin-top: -12px; }
-        #widget-classic .progress-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
-        #widget-classic .progress-bar-container { width: 100%; height: 10px; background-color: rgba(255, 255, 255, 0.3); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
-        #widget-classic .progress-bar-fill { height: 100%; background-color: #0d369c; }
-        
-        /* 🔽 복무일자 형식을 "561 / 606"로 변경 */
+        #widget-classic .name {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        #widget-classic .date-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        #widget-classic .date-row .label {
+            color: #888888;
+        }
+
+        #widget-classic .time-left {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 8px;
+            color: #333333;
+        }
+
+        #widget-classic .dday-bar {
+            background-color: #2b56c6;
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px 8px 0 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #widget-classic .progress-section {
+            background-color: #5393ff;
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 0 0 8px 8px;
+            margin-top: -12px;
+        }
+
+        #widget-classic .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        #widget-classic .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        #widget-classic .progress-bar-fill {
+            height: 100%;
+            background-color: #0d369c;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         #widget-classic .progress-stats {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             margin-top: 4px;
         }
+
         #widget-classic .served-days {
             font-size: 10px;
             color: rgba(255, 255, 255, 0.75);
             letter-spacing: 0.5px;
         }
+
         #widget-classic .progress-percentage {
             text-align: right;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.9);
         }
 
-        /* ==================== [스타일 2: 트렌디 힙 스타일] ==================== */
+
+        /* =========================================================
+           스타일 2 : 트렌디 힙
+        ========================================================= */
+
         #widget-trendy {
             position: relative;
             min-height: 280px;
@@ -140,9 +206,9 @@
             overflow: hidden;
         }
 
-        #widget-trendy.is-capturing { 
-            background: none !important; 
-            background-color: transparent !important; 
+        #widget-trendy.is-capturing {
+            background: none !important;
+            background-color: transparent !important;
         }
 
         .trendy-layout {
@@ -161,207 +227,974 @@
             position: relative;
         }
 
-        .trendy-info-card { width: 85%; transform: rotate(-3deg); z-index: 2; margin-left: 5%; }
-        .trendy-info-card .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 12px; }
-        .trendy-info-card .profile-mock { width: 48px; height: 48px; background: linear-gradient(135deg, #a7f3d0, #3b82f6); border-radius: 12px; border: 2px solid #111827; display: flex; align-items: center; justify-content: center; }
-        .fluent-emoji { width: 32px; height: 32px; object-fit: contain; }
-        .trendy-info-card .name { font-size: 20px; color: #111827; margin: 0 0 4px 0; letter-spacing: -0.5px; }
-        .trendy-info-card .badge { background: #111827; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
-        .trendy-info-card .dates { display: flex; justify-content: space-between; font-size: 12px; color: #4b5563; }
-        .trendy-info-card .dates span { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; margin-right: 6px; font-size: 10px; color: #64748b; }
+        .trendy-info-card {
+            width: 85%;
+            transform: rotate(-3deg);
+            z-index: 2;
+            margin-left: 5%;
+        }
 
-        .trendy-progress-card { width: 90%; transform: rotate(2deg); z-index: 3; margin-left: auto; margin-top: -15px; background: #eef2ff; }
-        .trendy-progress-card .progress-text-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .trendy-time-left { font-size: 13px; color: #111827; background: #fff; border: 1.5px solid #111827; padding: 4px 10px; border-radius: 20px; }
-        
-        /* 🔽 복무일자 형식을 "561 / 606"로 변경 (트렌디) */
+        .trendy-info-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .trendy-info-card .profile-mock {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #a7f3d0, #3b82f6);
+            border-radius: 12px;
+            border: 2px solid #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fluent-emoji {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .trendy-info-card .name {
+            font-size: 20px;
+            color: #111827;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .trendy-info-card .badge {
+            background: #111827;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .trendy-info-card .dates {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .trendy-info-card .dates span {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .trendy-progress-card {
+            width: 90%;
+            transform: rotate(2deg);
+            z-index: 3;
+            margin-left: auto;
+            margin-top: -15px;
+            background: #eef2ff;
+        }
+
+        .trendy-progress-card .progress-text-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .trendy-time-left {
+            font-size: 13px;
+            color: #111827;
+            background: #fff;
+            border: 1.5px solid #111827;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
         .trendy-right-stats {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
             line-height: 1.3;
         }
+
         .trendy-served-days {
             font-size: 9px;
             color: #64748b;
             font-weight: 600;
         }
-        .trendy-percentage { 
-            font-size: 16px; 
-            color: #4f46e5; 
-            text-shadow: none !important; 
+
+        .trendy-percentage {
+            font-size: 16px;
+            color: #4f46e5;
+            text-shadow: none !important;
         }
 
-        .trendy-bar-bg { width: 100%; height: 16px; background: #fff; border: 2px solid #111827; border-radius: 30px; overflow: hidden; }
-        .trendy-bar-fill { height: 100%; background: #3b82f6; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.2) 10px, rgba(255,255,255,0.2) 20px); border-right: 2px solid #111827; }
+        .trendy-bar-bg {
+            width: 100%;
+            height: 16px;
+            background: #fff;
+            border: 2px solid #111827;
+            border-radius: 30px;
+            overflow: hidden;
+        }
 
-        .sticker-dday { position: absolute; top: 10px; right: 15px; background: #a3e635; color: #111827; border: 2px solid #111827; padding: 8px 16px; border-radius: 30px; font-size: 16px; transform: rotate(10deg); z-index: 4; box-shadow: 2px 2px 0px #111827; }
-        .sticker-star { position: absolute; bottom: 15px; left: 10px; width: 36px; height: 36px; transform: rotate(-15deg); z-index: 4; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8)); }
-        .sticker-flower { position: absolute; top: 40%; left: -5px; width: 32px; height: 32px; z-index: 1; filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.6)); }
+        .trendy-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #3b82f6;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.2) 10px,
+                rgba(255,255,255,0.2) 20px
+            );
+            border-right: 2px solid #111827;
+            transition: width 0.3s ease;
+        }
 
-        .action-container { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-        .download-btn { width: 100%; padding: 16px; background-color: #111827; color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .download-btn img { width: 22px; height: 22px; }
+        .sticker-dday {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: #a3e635;
+            color: #111827;
+            border: 2px solid #111827;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 16px;
+            transform: rotate(10deg);
+            z-index: 4;
+            box-shadow: 2px 2px 0px #111827;
+        }
 
-        #image-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
-        #image-overlay .guide-text { font-size: 14px; margin-bottom: 16px; text-align: center; color: #fff; }
-        #image-overlay img { max-width: 100%; max-height: 65%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        #image-overlay .close-btn { margin-top: 20px; padding: 12px 28px; background: #fff; border-radius: 30px; border: none; }
+        .sticker-star {
+            position: absolute;
+            bottom: 15px;
+            left: 10px;
+            width: 36px;
+            height: 36px;
+            transform: rotate(-15deg);
+            z-index: 4;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
+        }
+
+        .sticker-flower {
+            position: absolute;
+            top: 40%;
+            left: -5px;
+            width: 32px;
+            height: 32px;
+            z-index: 1;
+            filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.6));
+        }
+
+
+        /* =========================================================
+           버튼 / 이미지 저장
+        ========================================================= */
+
+        .action-container {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: #111827;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-btn img {
+            width: 22px;
+            height: 22px;
+        }
+
+        #image-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #image-overlay .guide-text {
+            font-size: 14px;
+            margin-bottom: 16px;
+            text-align: center;
+            color: #fff;
+        }
+
+        #image-overlay img {
+            max-width: 100%;
+            max-height: 65%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        #image-overlay .close-btn {
+            margin-top: 20px;
+            padding: 12px 28px;
+            background: #fff;
+            border-radius: 30px;
+            border: none;
+        }
     </style>
 </head>
+
+
 <body>
 
+    <!-- =========================================================
+         스타일 선택
+    ========================================================= -->
+
     <div class="tab-menu">
-        <button class="tab-btn active" onclick="switchStyle('classic', this)">기존 (오리지널)</button>
-        <button class="tab-btn" onclick="switchStyle('trendy', this)">신규 (힙 트렌디)</button>
-    </div>
+        <button
+            class="tab-btn active"
+            onclick="switchStyle('classic', this)">
+            기존 (오리지널)
+        </button>
 
-    <div class="widget-wrapper">
-        <!-- ===== 클래식 위젯 ===== -->
-        <div id="widget-classic" class="capture-area">
-            <div class="top-section">
-                <div class="profile-circle"></div>
-                <div class="info-card">
-                    <div class="name">병장 신지성</div>
-                    <div class="date-row"><span class="label">입대</span><span>2025.02.10</span></div>
-                    <div class="date-row"><span class="label">전역</span><span>2026.10.09</span></div>
-                    <div id="classic-time-left" class="time-left">계산 중...</div>
-                </div>
-            </div>
-            <div>
-                <div class="dday-bar">D-Day 카운트</div>
-                <div class="progress-section">
-                    <div class="progress-header">
-                        <span id="classic-dday">D-000</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div id="classic-bar-fill" class="progress-bar-fill"></div>
-                    </div>
-                    <!-- 🔽 수정: "561 / 606" 형식으로 표시 -->
-                    <div class="progress-stats">
-                        <span id="classic-served-days" class="served-days">0 / 0</span>
-                        <span id="classic-percent" class="progress-percentage">0.000000%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== 트렌디 위젯 ===== -->
-        <div id="widget-trendy" class="capture-area">
-            <div class="trendy-layout">
-                <div class="sticker-dday" id="trendy-dday">D-000</div>
-                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Sparkles/3D/sparkles_3d.png" width="36" height="36" alt="✨" class="sticker-star" crossorigin="anonymous">
-                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Party%20popper/3D/party_popper_3d.png" width="32" height="32" alt="🎉" class="sticker-flower" crossorigin="anonymous">
-                <div class="neo-card trendy-info-card">
-                    <div class="card-header">
-                        <div class="profile-mock"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Star-struck/3D/star-struck_3d.png" width="32" height="32" class="fluent-emoji" crossorigin="anonymous"></div>
-                        <div><div class="name">병장 신지성</div><span class="badge">NAVY</span></div>
-                    </div>
-                    <div class="dates"><div><span>입대</span>25.02.10</div><div><span>전역</span>26.10.09</div></div>
-                </div>
-                <div class="neo-card trendy-progress-card">
-                    <div class="progress-text-row">
-                        <div class="trendy-time-left" id="trendy-time-left">계산 중...</div>
-                        <!-- 🔽 수정: "561 / 606" 형식으로 표시 -->
-                        <div class="trendy-right-stats">
-                            <span class="trendy-served-days" id="trendy-served-days">0 / 0</span>
-                            <span class="trendy-percentage" id="trendy-percent">0.000000%</span>
-                        </div>
-                    </div>
-                    <div class="trendy-bar-bg">
-                        <div class="trendy-bar-fill" id="trendy-bar-fill"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="action-container">
-        <button class="download-btn" onclick="generateHighQualityImage()">
-            <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Camera%20with%20flash/3D/camera_with_flash_3d.png" alt="📸"> 위젯 이미지 저장하기
+        <button
+            class="tab-btn"
+            onclick="switchStyle('trendy', this)">
+            신규 (힙 트렌디)
         </button>
     </div>
 
-    <div id="image-overlay" onclick="closeOverlay(event)">
-        <div class="guide-text">이미지를 꾹 눌러 [사진 앱에 저장]하세요.</div>
-        <img id="preview-image" src="" alt="프리뷰">
-        <button class="close-btn" onclick="document.getElementById('image-overlay').style.display='none';">닫기</button>
+
+    <div class="widget-wrapper">
+
+        <!-- =====================================================
+             클래식 위젯
+        ====================================================== -->
+
+        <div id="widget-classic" class="capture-area">
+
+            <div class="top-section">
+
+                <div class="profile-circle"></div>
+
+                <div class="info-card">
+
+                    <div class="name">
+                        병장 신지성
+                    </div>
+
+                    <div class="date-row">
+                        <span class="label">입대</span>
+                        <span>2025.02.10</span>
+                    </div>
+
+                    <div class="date-row">
+                        <span class="label">전역</span>
+                        <span>2026.10.09</span>
+                    </div>
+
+                    <div
+                        id="classic-time-left"
+                        class="time-left">
+                        계산 중...
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div>
+
+                <div class="dday-bar">
+                    D-Day 카운트
+                </div>
+
+                <div class="progress-section">
+
+                    <div class="progress-header">
+                        <span id="classic-dday">
+                            D-000
+                        </span>
+                    </div>
+
+                    <div class="progress-bar-container">
+                        <div
+                            id="classic-bar-fill"
+                            class="progress-bar-fill">
+                        </div>
+                    </div>
+
+                    <div class="progress-stats">
+
+                        <span
+                            id="classic-served-days"
+                            class="served-days">
+                            0 / 607
+                        </span>
+
+                        <span
+                            id="classic-percent"
+                            class="progress-percentage">
+                            0.000000%
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             트렌디 위젯
+        ====================================================== -->
+
+        <div id="widget-trendy" class="capture-area">
+
+            <div class="trendy-layout">
+
+                <div
+                    class="sticker-dday"
+                    id="trendy-dday">
+                    D-000
+                </div>
+
+
+                <img
+                    src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Sparkles/3D/sparkles_3d.png"
+                    width="36"
+                    height="36"
+                    alt="✨"
+                    class="sticker-star"
+                    crossorigin="anonymous"
+                >
+
+
+                <img
+                    src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Party%20popper/3D/party_popper_3d.png"
+                    width="32"
+                    height="32"
+                    alt="🎉"
+                    class="sticker-flower"
+                    crossorigin="anonymous"
+                >
+
+
+                <div class="neo-card trendy-info-card">
+
+                    <div class="card-header">
+
+                        <div class="profile-mock">
+
+                            <img
+                                src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Star-struck/3D/star-struck_3d.png"
+                                width="32"
+                                height="32"
+                                class="fluent-emoji"
+                                crossorigin="anonymous"
+                            >
+
+                        </div>
+
+                        <div>
+
+                            <div class="name">
+                                병장 신지성
+                            </div>
+
+                            <span class="badge">
+                                NAVY
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dates">
+
+                        <div>
+                            <span>입대</span>
+                            25.02.10
+                        </div>
+
+                        <div>
+                            <span>전역</span>
+                            26.10.09
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="neo-card trendy-progress-card">
+
+                    <div class="progress-text-row">
+
+                        <div
+                            class="trendy-time-left"
+                            id="trendy-time-left">
+                            계산 중...
+                        </div>
+
+                        <div class="trendy-right-stats">
+
+                            <span
+                                class="trendy-served-days"
+                                id="trendy-served-days">
+                                0 / 607
+                            </span>
+
+                            <span
+                                class="trendy-percentage"
+                                id="trendy-percent">
+                                0.000000%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="trendy-bar-bg">
+
+                        <div
+                            class="trendy-bar-fill"
+                            id="trendy-bar-fill">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <script>
-        const startDate = new Date('2025-02-10T00:00:00');
-        const endDate = new Date('2026-10-09T07:00:00');
 
-        // 전체 복무일수 (606일)
-        const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+    <!-- =========================================================
+         이미지 저장 버튼
+    ========================================================= -->
+
+    <div class="action-container">
+
+        <button
+            class="download-btn"
+            onclick="generateHighQualityImage()">
+
+            <img
+                src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Camera%20with%20flash/3D/camera_with_flash_3d.png"
+                alt="📸"
+            >
+
+            위젯 이미지 저장하기
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================================================
+         이미지 미리보기
+    ========================================================= -->
+
+    <div
+        id="image-overlay"
+        onclick="closeOverlay(event)">
+
+        <div class="guide-text">
+            이미지를 꾹 눌러 [사진 앱에 저장]하세요.
+        </div>
+
+        <img
+            id="preview-image"
+            src=""
+            alt="프리뷰"
+        >
+
+        <button
+            class="close-btn"
+            onclick="document.getElementById('image-overlay').style.display='none';">
+
+            닫기
+
+        </button>
+
+    </div>
+
+
+    <script>
+
+        /* ========================================================
+           복무 기준
+        ======================================================== */
+
+        // 입대
+        const startDate = new Date(
+            '2025-02-10T00:00:00+09:00'
+        );
+
+        // 전역
+        const endDate = new Date(
+            '2026-10-09T07:00:00+09:00'
+        );
+
+
+        /*
+         * 날짜 기준 총 복무일
+         *
+         * 2025-02-10 = 1일차
+         * 2026-10-09 = 607일차
+         */
+        const totalServiceDays = 607;
+
+
+        /* 하루 밀리초 */
+        const DAY_MS = 24 * 60 * 60 * 1000;
+
+
+        /* ========================================================
+           군 복무 데이터 계산
+        ======================================================== */
 
         function calculateMilitaryData() {
+
             const now = new Date();
-            const total = endDate - startDate;
-            const current = now - startDate;
-            
-            // 진행률 계산
-            let percent = (current / total) * 100;
-            if(percent < 0) percent = 0;
-            if(percent > 100) percent = 100;
-            const percentStr = percent.toFixed(6) + '%';
-            
-            // 🔽 복무 일수 계산 (입대일을 1일차로 포함 = +1)
-            const servedDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24)) + 1;
-            const servedText = `${servedDays} / ${totalDays}`;
 
-            // 클래식 업데이트
-            document.getElementById('classic-percent').innerText = percentStr;
-            document.getElementById('classic-bar-fill').style.width = percentStr;
-            document.getElementById('classic-served-days').innerText = servedText;
 
-            // 트렌디 업데이트
-            document.getElementById('trendy-percent').innerText = percentStr;
-            document.getElementById('trendy-bar-fill').style.width = percentStr;
-            document.getElementById('trendy-served-days').innerText = servedText;
+            /* ----------------------------------------------------
+               1. 전체 기간 및 현재 진행 시간
+            ---------------------------------------------------- */
 
-            // D-Day 및 남은 시간
-            const diff = endDate - now;
-            const remainingDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const ddayStr = diff > 0 ? `D-${remainingDays}` : '전역 완료';
-            
-            document.getElementById('classic-dday').innerText = ddayStr;
-            document.getElementById('trendy-dday').innerText = ddayStr;
+            const totalDuration =
+                endDate.getTime() -
+                startDate.getTime();
 
-            const totalSeconds = Math.floor(diff / 1000);
-            const months = Math.floor(totalSeconds / (30 * 24 * 3600));
-            const days = Math.floor((totalSeconds % (30 * 24 * 3600)) / (24 * 3600));
-            const timeLeftText = diff > 0 ? `${months}개월 ${days}일 남음` : '고생하셨습니다!';
-            document.getElementById('classic-time-left').innerText = timeLeftText;
-            document.getElementById('trendy-time-left').innerText = timeLeftText;
+            const elapsed =
+                now.getTime() -
+                startDate.getTime();
+
+
+            /* ----------------------------------------------------
+               2. 진행률
+            ---------------------------------------------------- */
+
+            let percent =
+                (elapsed / totalDuration) * 100;
+
+            if (percent < 0) {
+                percent = 0;
+            }
+
+            if (percent > 100) {
+                percent = 100;
+            }
+
+
+            const percentStr =
+                percent.toFixed(6) + '%';
+
+
+            /* ----------------------------------------------------
+               3. 복무일수
+               
+               날짜 자체를 기준으로 계산합니다.
+
+               2025-02-10 → 1일차
+               2025-02-11 → 2일차
+               ...
+               2026-10-09 → 607일차
+
+               전역 시각인 07:00을 지나면
+               전역 완료 상태입니다.
+            ---------------------------------------------------- */
+
+            let servedDays;
+
+
+            if (now < startDate) {
+
+                servedDays = 0;
+
+            } else if (now >= endDate) {
+
+                servedDays = totalServiceDays;
+
+            } else {
+
+                /*
+                 * 시간 부분을 제거하고
+                 * 한국 달력 날짜만 비교합니다.
+                 */
+
+                const startCalendar =
+                    new Date(
+                        startDate.getFullYear(),
+                        startDate.getMonth(),
+                        startDate.getDate()
+                    );
+
+                const nowCalendar =
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate()
+                    );
+
+
+                const calendarDifference =
+                    Math.floor(
+                        (
+                            nowCalendar.getTime() -
+                            startCalendar.getTime()
+                        ) / DAY_MS
+                    );
+
+
+                /*
+                 * 입대일을 1일차로 포함
+                 */
+                servedDays =
+                    calendarDifference + 1;
+
+
+                /*
+                 * 안전 범위
+                 */
+                if (servedDays < 1) {
+                    servedDays = 1;
+                }
+
+                if (servedDays > totalServiceDays) {
+                    servedDays = totalServiceDays;
+                }
+
+            }
+
+
+            const servedText =
+                `${servedDays} / ${totalServiceDays}`;
+
+
+            /* ====================================================
+               4. 화면 업데이트
+            ==================================================== */
+
+            // 클래식
+            document.getElementById(
+                'classic-percent'
+            ).innerText = percentStr;
+
+            document.getElementById(
+                'classic-bar-fill'
+            ).style.width = percentStr;
+
+            document.getElementById(
+                'classic-served-days'
+            ).innerText = servedText;
+
+
+            // 트렌디
+            document.getElementById(
+                'trendy-percent'
+            ).innerText = percentStr;
+
+            document.getElementById(
+                'trendy-bar-fill'
+            ).style.width = percentStr;
+
+            document.getElementById(
+                'trendy-served-days'
+            ).innerText = servedText;
+
+
+            /* ====================================================
+               5. D-Day
+            ==================================================== */
+
+            const diff =
+                endDate.getTime() -
+                now.getTime();
+
+
+            let ddayStr;
+
+
+            if (diff <= 0) {
+
+                ddayStr = '전역 완료';
+
+            } else {
+
+                /*
+                 * 남은 날짜는 24시간 단위의
+                 * 완전한 일수로 표시
+                 */
+                const remainingDays =
+                    Math.floor(diff / DAY_MS);
+
+                ddayStr =
+                    `D-${remainingDays}`;
+
+            }
+
+
+            document.getElementById(
+                'classic-dday'
+            ).innerText = ddayStr;
+
+            document.getElementById(
+                'trendy-dday'
+            ).innerText = ddayStr;
+
+
+            /* ====================================================
+               6. 남은 시간
+            ==================================================== */
+
+            if (diff <= 0) {
+
+                document.getElementById(
+                    'classic-time-left'
+                ).innerText =
+                    '고생하셨습니다!';
+
+                document.getElementById(
+                    'trendy-time-left'
+                ).innerText =
+                    '고생하셨습니다!';
+
+            } else {
+
+                const totalSeconds =
+                    Math.floor(diff / 1000);
+
+
+                /*
+                 * 기존 디자인을 유지하여
+                 * 30일 = 1개월로 표시
+                 */
+                const months =
+                    Math.floor(
+                        totalSeconds /
+                        (30 * 24 * 60 * 60)
+                    );
+
+
+                const days =
+                    Math.floor(
+                        (
+                            totalSeconds %
+                            (30 * 24 * 60 * 60)
+                        ) /
+                        (24 * 60 * 60)
+                    );
+
+
+                const timeLeftText =
+                    `${months}개월 ${days}일 남음`;
+
+
+                document.getElementById(
+                    'classic-time-left'
+                ).innerText =
+                    timeLeftText;
+
+                document.getElementById(
+                    'trendy-time-left'
+                ).innerText =
+                    timeLeftText;
+
+            }
+
         }
+
+
+        /* ========================================================
+           최초 실행 + 1분마다 갱신
+        ======================================================== */
 
         calculateMilitaryData();
-        setInterval(calculateMilitaryData, 60000);
+
+        setInterval(
+            calculateMilitaryData,
+            60 * 1000
+        );
+
+
+        /* ========================================================
+           스타일 전환
+        ======================================================== */
 
         let currentStyle = 'classic';
+
+
         function switchStyle(styleName, btn) {
+
             currentStyle = styleName;
-            document.getElementById('widget-classic').style.display = styleName === 'classic' ? 'flex' : 'none';
-            document.getElementById('widget-trendy').style.display = styleName === 'trendy' ? 'block' : 'none';
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+
+            document.getElementById(
+                'widget-classic'
+            ).style.display =
+                styleName === 'classic'
+                    ? 'flex'
+                    : 'none';
+
+
+            document.getElementById(
+                'widget-trendy'
+            ).style.display =
+                styleName === 'trendy'
+                    ? 'block'
+                    : 'none';
+
+
+            document
+                .querySelectorAll('.tab-btn')
+                .forEach(
+                    button =>
+                        button.classList.remove('active')
+                );
+
+
             btn.classList.add('active');
+
         }
 
-        function generateHighQualityImage() {
-            const container = document.getElementById(currentStyle === 'classic' ? 'widget-classic' : 'widget-trendy');
-            const options = { scale: 4, useCORS: true };
-            if(currentStyle === 'trendy') {
-                container.classList.add('is-capturing');
+
+        /* ========================================================
+           고화질 이미지 생성
+        ======================================================== */
+
+        async function generateHighQualityImage() {
+
+            const container =
+                document.getElementById(
+                    currentStyle === 'classic'
+                        ? 'widget-classic'
+                        : 'widget-trendy'
+                );
+
+
+            const options = {
+                scale: 4,
+                useCORS: true
+            };
+
+
+            if (currentStyle === 'trendy') {
+
+                container.classList.add(
+                    'is-capturing'
+                );
+
                 options.backgroundColor = null;
+
             }
-            html2canvas(container, options).then(canvas => {
-                if(currentStyle === 'trendy') container.classList.remove('is-capturing');
-                document.getElementById('preview-image').src = canvas.toDataURL('image/png');
-                document.getElementById('image-overlay').style.display = 'flex';
-            });
+
+
+            try {
+
+                const canvas =
+                    await html2canvas(
+                        container,
+                        options
+                    );
+
+
+                document.getElementById(
+                    'preview-image'
+                ).src =
+                    canvas.toDataURL(
+                        'image/png'
+                    );
+
+
+                document.getElementById(
+                    'image-overlay'
+                ).style.display =
+                    'flex';
+
+
+            } catch (error) {
+
+                console.error(
+                    '이미지 생성 실패:',
+                    error
+                );
+
+                alert(
+                    '이미지를 생성하지 못했습니다.'
+                );
+
+            } finally {
+
+                if (currentStyle === 'trendy') {
+
+                    container.classList.remove(
+                        'is-capturing'
+                    );
+
+                }
+
+            }
+
         }
-        function closeOverlay(e) { if(e.target.id === 'image-overlay') document.getElementById('image-overlay').style.display = 'none'; }
+
+
+        /* ========================================================
+           오버레이 닫기
+        ======================================================== */
+
+        function closeOverlay(event) {
+
+            if (
+                event.target.id ===
+                'image-overlay'
+            ) {
+
+                document.getElementById(
+                    'image-overlay'
+                ).style.display =
+                    'none';
+
+            }
+
+        }
+
     </script>
+
 </body>
 </html>
