@@ -458,14 +458,19 @@
 <body>
 
     <div class="tab-menu">
-        <button class="tab-btn active" onclick="switchStyle('classic', this)">
+        <button
+            class="tab-btn active"
+            onclick="switchStyle('classic', this)">
             기존 (오리지널)
         </button>
 
-        <button class="tab-btn" onclick="switchStyle('trendy', this)">
+        <button
+            class="tab-btn"
+            onclick="switchStyle('trendy', this)">
             신규 (힙 트렌디)
         </button>
     </div>
+
 
     <div class="widget-wrapper">
 
@@ -493,13 +498,16 @@
                         <span>2026.10.09</span>
                     </div>
 
-                    <div id="classic-time-left" class="time-left">
+                    <div
+                        id="classic-time-left"
+                        class="time-left">
                         계산 중...
                     </div>
 
                 </div>
 
             </div>
+
 
             <div>
 
@@ -516,10 +524,12 @@
                     </div>
 
                     <div class="progress-bar-container">
+
                         <div
                             id="classic-bar-fill"
                             class="progress-bar-fill">
                         </div>
+
                     </div>
 
                     <div class="progress-stats">
@@ -557,6 +567,7 @@
                     D-000
                 </div>
 
+
                 <img
                     src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Sparkles/3D/sparkles_3d.png"
                     width="36"
@@ -566,6 +577,7 @@
                     crossorigin="anonymous"
                 >
 
+
                 <img
                     src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Party%20popper/3D/party_popper_3d.png"
                     width="32"
@@ -574,6 +586,7 @@
                     class="sticker-flower"
                     crossorigin="anonymous"
                 >
+
 
                 <div class="neo-card trendy-info-card">
 
@@ -591,6 +604,7 @@
 
                         </div>
 
+
                         <div>
 
                             <div class="name">
@@ -604,6 +618,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="dates">
 
@@ -632,6 +647,7 @@
                             계산 중...
                         </div>
 
+
                         <div class="trendy-right-stats">
 
                             <span
@@ -649,6 +665,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="trendy-bar-bg">
 
@@ -705,9 +722,7 @@
         <button
             class="close-btn"
             onclick="document.getElementById('image-overlay').style.display='none';">
-
             닫기
-
         </button>
 
     </div>
@@ -716,7 +731,7 @@
     <script>
 
         /* =========================================================
-           기본 날짜 설정
+           날짜 설정
            ========================================================= */
 
         const startDate =
@@ -729,31 +744,35 @@
         /*
          * 전체 복무일수
          *
-         * 중요:
-         * 사용자가 지정한 값이므로 606일을 고정합니다.
+         * 사용자가 지정한 기준:
+         * 606일
          */
         const totalDays = 606;
+
 
         const DAY_MS =
             1000 * 60 * 60 * 24;
 
 
         /* =========================================================
-           날짜만 추출
+           날짜만 추출하는 함수
            
-           시각을 제거하여
+           시간은 제거하고
+           년 / 월 / 일만 비교합니다.
            
-           2026-10-06 20:00
+           따라서
+
+           10/06 20:00
            →
-           2026-10-09 07:00
-           
-           를
-           
-           2026-10-06
+           10/09 07:00
+
+           은
+
+           10/06
            →
-           2026-10-09
-           
-           로 계산합니다.
+           10/09
+
+           = 3일
            ========================================================= */
 
         function getCalendarDate(date) {
@@ -777,7 +796,7 @@
 
 
             /* =====================================================
-               1. 전체 진행률
+               진행률
                ===================================================== */
 
             const total =
@@ -797,6 +816,7 @@
                 percent = 0;
             }
 
+
             if (percent > 100) {
                 percent = 100;
             }
@@ -807,11 +827,10 @@
 
 
             /* =====================================================
-               2. 복무일수
-
-               총 복무일수는 606일 고정.
-
-               입대일을 1일차로 포함합니다.
+               복무일수
+               
+               입대일 = 1일차
+               총 복무일수 = 606일
                ===================================================== */
 
             let servedDays;
@@ -848,7 +867,7 @@
 
 
             /* =====================================================
-               3. 진행률 UI
+               진행률 UI
                ===================================================== */
 
             document.getElementById(
@@ -882,30 +901,16 @@
 
 
             /* =====================================================
-               4. D-Day
-
-               ★ 핵심 수정 부분 ★
-
-               기존:
-               endDate - now
-
-               이 방식은 시각까지 계산하기 때문에
-
-               10/06 20:00
-               → 10/09 07:00
-
-               = 2일 11시간
-
-               따라서 D-2가 나왔습니다.
-
-               이제는 날짜만 비교합니다.
-
-               10/06
-               → 10/09
-
+               날짜 기준 D-Day 계산
+               
+               ★ 중요 ★
+               
+               시각을 사용하지 않습니다.
+               
+               10월 6일 → 10월 9일
                = 3일
-
-               따라서 D-3이 됩니다.
+               
+               따라서 D-3
                ===================================================== */
 
             const today =
@@ -924,6 +929,17 @@
                 );
 
 
+            /* =====================================================
+               D-Day 표시
+               
+               10/06 → D-3
+               10/07 → D-2
+               10/08 → D-1
+               10/09 → 전역 :)
+               
+               전역 이후에도 전역 :) 유지
+               ===================================================== */
+
             let ddayStr;
 
 
@@ -932,22 +948,13 @@
                 ddayStr =
                     `D-${calendarDiff}`;
 
-            } else if (calendarDiff === 0) {
-
-                ddayStr =
-                    'D-DAY';
-
             } else {
 
                 ddayStr =
-                    '전역 완료';
+                    '전역 :)';
 
             }
 
-
-            /* =====================================================
-               D-Day 표시
-               ===================================================== */
 
             document.getElementById(
                 'classic-dday'
@@ -960,52 +967,38 @@
 
 
             /* =====================================================
-               5. 개월 / 일 남음
-
-               D-Day와 동일하게 날짜 기준으로 계산합니다.
-
+               개월 / 일 남음
+               
+               날짜 기준으로 계산합니다.
+               
                예:
-
-               10월 6일 → 10월 9일
-
-               calendarDiff = 3
-
-               30일 기준으로 환산:
-
-               3 / 30
-               = 0개월
-
-               나머지
+               
+               10/06 → 10/09
                = 3일
-
-               결과:
-
+               
                0개월 3일 남음
+               
+               전역 당일:
+               
+               0개월 0일 남음
                ===================================================== */
 
-            let timeLeftText;
+            const safeRemainingDays =
+                Math.max(calendarDiff, 0);
 
 
-            if (calendarDiff > 0) {
-
-                const months =
-                    Math.floor(
-                        calendarDiff / 30
-                    );
-
-                const days =
-                    calendarDiff % 30;
+            const months =
+                Math.floor(
+                    safeRemainingDays / 30
+                );
 
 
-                timeLeftText =
-                    `${months}개월 ${days}일 남음`;
+            const days =
+                safeRemainingDays % 30;
 
-            } else {
 
-                timeLeftText =
-                    '고생하셨습니다!';
-
-            }
+            const timeLeftText =
+                `${months}개월 ${days}일 남음`;
 
 
             /* =====================================================
@@ -1014,12 +1007,14 @@
 
             document.getElementById(
                 'classic-time-left'
-            ).innerText = timeLeftText;
+            ).innerText =
+                timeLeftText;
 
 
             document.getElementById(
                 'trendy-time-left'
-            ).innerText = timeLeftText;
+            ).innerText =
+                timeLeftText;
 
         }
 
@@ -1031,13 +1026,9 @@
         calculateMilitaryData();
 
 
-        /*
-         * 1분마다 갱신
-         *
-         * 날짜가 넘어가면 자동으로
-         * D-3 → D-2 → D-1 → D-DAY
-         * 로 변경됩니다.
-         */
+        /* =========================================================
+           1분마다 자동 갱신
+           ========================================================= */
 
         setInterval(
             calculateMilitaryData,
